@@ -6,6 +6,13 @@ import MapView, { Circle, Polygon, Polyline } from 'react-native-maps';
 import { NavigationProps } from '../navigation/app-stacks';
 import CustomMarker from '../components/CustomMarker';
 import { polygon } from '../Data/Bdx';
+import { StMichel } from '../Data/StMichel';
+import { GdHommes } from '../Data/GdHommes';
+import { SteCroix } from '../Data/SteCroix';
+import { StPaul } from '../Data/StPaul';
+import { StPierre } from '../Data/StPierre';
+import { Victoire } from '../Data/Victoire';
+
 interface MapProps extends NavigationProps {}
 
 interface MapState {
@@ -92,8 +99,13 @@ export default class MapScreen extends Component<MapProps, MapState> {
             ]}
             zIndex={15}
           /> */}
-          <Polyline coordinates={polygon} strokeWidth={5} />
-
+          <Polyline coordinates={polygon} strokeWidth={2} />
+          <Polyline coordinates={GdHommes} strokeWidth={2} />
+          <Polyline coordinates={SteCroix} strokeWidth={2} />
+          <Polyline coordinates={StMichel} strokeWidth={2} />
+          <Polyline coordinates={StPaul} strokeWidth={2} />
+          <Polyline coordinates={StPierre} strokeWidth={2} />
+          <Polyline coordinates={Victoire} strokeWidth={2} />
           <CustomMarker navigation={this.props.navigation} />
         </MapView>
       </View>

@@ -1,0 +1,9 @@
+export const SteCroix = [
+  { latitude: 44.83244543457999, longitude: -0.5606686732559774 },
+  { latitude: 44.831531562106704, longitude: -0.5616578221168966 },
+  { latitude: 44.83078231188018, longitude: -0.561627542049703 },
+  { latitude: 44.82866037555309, longitude: -0.5627303859584387 },
+  { latitude: 44.827361393390234, longitude: -0.556727954516012 },
+  { latitude: 44.82932264122412, longitude: -0.5550384829658528 },
+  { latitude: 44.83244543457999, longitude: -0.5606686732559774 }
+];

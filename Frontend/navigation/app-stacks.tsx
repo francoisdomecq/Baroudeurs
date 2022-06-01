@@ -7,6 +7,7 @@ import {
 
 import Map from '../screens/Map';
 import User from '../screens/User';
+import Details from '../screens/Details';
 
 // Define view (screen) names and associated params
 // Enables type checking and code completion for views
@@ -14,6 +15,7 @@ import User from '../screens/User';
 export type RootStackParamList = {
   Map: undefined;
   User: undefined;
+  Details: { markerId: number };
 };
 
 export interface NavigationProps {
@@ -42,6 +44,7 @@ export const MapStackScreen = () => {
         component={Map}
       />
       <MapStack.Screen name="User" component={User} />
+      <MapStack.Screen name="Details" component={Details} />
     </MapStack.Navigator>
   );
 };

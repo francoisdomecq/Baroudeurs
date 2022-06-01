@@ -3,7 +3,7 @@ import { Callout, CalloutSubview, Marker } from 'react-native-maps';
 import { StyleSheet, View, Text, Image, Button } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
 import { MARKERS_DATA } from '../Data/Markers_Data';
-
+import FicheDescriptive from './FicheDescriptive';
 interface CustomMarkerProps extends NavigationProps {}
 
 //Ce custom component représente notre classe Point Interet et nous permet d'afficher nos différents points d'intérêts sur la carte
@@ -24,7 +24,7 @@ class CustomMarker extends React.Component<CustomMarkerProps> {
                 //On attribue une key à chaque marqueur
                 key={marker.id}
                 //On modifie les marqueurs avec les images que nous leurs avons donné
-                
+
                 //On définit ici les coordonnées où le marqueur doit être affiché
                 coordinate={{
                   latitude: marker.latitude,
@@ -34,6 +34,23 @@ class CustomMarker extends React.Component<CustomMarkerProps> {
                 {
                   //Les components Callout sont propres au component propre, ils permettent de la même manière qu'un component touchableopacity de gérer les clics sur les marqueurs
                 }
+
+                <Callout tooltip>
+                  {
+                    //Le component calloutSubview permet de gérer les cas où l'utilisateur clique sur ce qui s'affiche après le premier clic sur le marqueur. Ici lors du premier clic
+                    //la fiche descriptive du point d'intérêt est affichée. Il peut de nouveau cliquer dessus et ainsi être redirigé vers la page détaillée du point d'intérêt
+                  }
+                  <CalloutSubview
+                    onPress={() => {
+                      navigation.navigate('Details', { markerId: marker.id });
+                    }}
+                  >
+                    <FicheDescriptive
+                      markers={marker}
+                      navigation={this.props.navigation}
+                    />
+                  </CalloutSubview>
+                </Callout>
               </Marker>
             ))}
           </View>
