@@ -8,6 +8,7 @@ import {
 import Map from '../screens/Map';
 import User from '../screens/User';
 import Details from '../screens/Details';
+import Quete from '../screens/Quetes';
 
 // Define view (screen) names and associated params
 // Enables type checking and code completion for views
@@ -15,6 +16,7 @@ import Details from '../screens/Details';
 export type RootStackParamList = {
   Map: undefined;
   User: undefined;
+  Quete: undefined;
   Details: { markerId: number };
 };
 
@@ -55,8 +57,21 @@ export const UserStackScreen = () => {
     <MapStack.Navigator screenOptions={stackScreenOptions}>
       <MapStack.Screen
         name="User"
-        // options={{ title: "Fil d'actualité" }}
+        options={{ title: 'Profil' }}
         component={User}
+      />
+    </MapStack.Navigator>
+  );
+};
+
+const QueteStack = createStackNavigator<RootStackParamList>();
+export const QueteStackScreen = () => {
+  return (
+    <MapStack.Navigator screenOptions={stackScreenOptions}>
+      <MapStack.Screen
+        name="Quete"
+        // options={{ title: "Fil d'actualité" }}
+        component={Quete}
       />
     </MapStack.Navigator>
   );

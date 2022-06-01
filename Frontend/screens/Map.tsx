@@ -1,5 +1,5 @@
 import React, { Component, useRef } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Circle, Polygon, Polyline } from 'react-native-maps';
@@ -18,42 +18,48 @@ interface MapProps extends NavigationProps {}
 interface MapState {
   latitude: number;
   longitude: number;
+  cityPicked: { latitude: number; longitude: number };
 }
 export default class MapScreen extends Component<MapProps, MapState> {
   constructor(public props: MapProps) {
     super(props);
     this.state = {
       latitude: 0,
-      longitude: 0
+      longitude: 0,
+      cityPicked: null!
     };
   }
 
   componentDidMount() {
     this.props.navigation.setOptions({
-      title: 'Profil',
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            this.props.navigation.navigate('User');
-          }}
-          style={{
-            alignItems: 'center',
-            marginRight: 10
-          }}
-        >
-          <Ionicons name="md-log-out" size={30} color="#2196F3" />
-          <Text style={{ fontSize: 8, fontWeight: '700', color: '#2196F3' }}>
-            Paramètres
-          </Text>
-        </TouchableOpacity>
-      )
+      headerShown: false
     });
+    this.setState({ cityPicked: { latitude: 44.837789, longitude: -0.57918 } });
   }
 
   render() {
-    return (
-      <View style={styles.container}>
+    const { latitude, longitude, cityPicked } = this.state;
+    return cityPicked ? (
+      <View
+        style={styles.container}
+        onTouchStart={() =>
+          this.props.navigation.setOptions({
+            headerShown: true
+          })
+        }
+        onTouchEnd={() =>
+          this.props.navigation.setOptions({
+            headerShown: false
+          })
+        }
+      >
         <MapView
+          initialRegion={{
+            latitude: cityPicked.latitude,
+            longitude: cityPicked.longitude,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1
+          }}
           mapPadding={{ top: 5, right: 5, left: 5, bottom: 5 }}
           onUserLocationChange={(user) => {
             //On déplace la caméra du joueur vers ses coordoonées (latitude, longitude)
@@ -79,26 +85,6 @@ export default class MapScreen extends Component<MapProps, MapState> {
           // zoomEnabled={false}
           // pitchEnabled={false}
         >
-          {/* <Circle
-            center={{
-              latitude: 44.837789,
-              longitude: -0.57918
-            }}
-            radius={5000}
-          ></Circle> */}
-
-          {/* <Polygon
-            fillColor="#fff"
-            strokeColor="rgba(0, 0, 0, 1)"
-            strokeWidth={1}
-            // coordinates={polygon}
-            coordinates={[
-              { latitude: 48.862725, longitude: 2.287592 },
-              { latitude: 48.842781658378726, longitude: 2.3644618703461484 },
-              { latitude: 48.835328169344194, longitude: 2.301119326866794 }
-            ]}
-            zIndex={15}
-          /> */}
           <Polyline coordinates={polygon} strokeWidth={2} />
           <Polyline coordinates={GdHommes} strokeWidth={2} />
           <Polyline coordinates={SteCroix} strokeWidth={2} />
@@ -108,6 +94,10 @@ export default class MapScreen extends Component<MapProps, MapState> {
           <Polyline coordinates={Victoire} strokeWidth={2} />
           <CustomMarker navigation={this.props.navigation} />
         </MapView>
+      </View>
+    ) : (
+      <View>
+        <ActivityIndicator />
       </View>
     );
   }

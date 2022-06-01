@@ -10,7 +10,8 @@ import { ActivityIndicator } from 'react-native';
 import {
   RootStackParamList,
   MapStackScreen,
-  UserStackScreen
+  UserStackScreen,
+  QueteStackScreen
 } from './app-stacks';
 import UserScreen from '../screens/User';
 
@@ -20,9 +21,11 @@ const getTabBarIcon = (
   color: string
 ) => {
   const icons: {
-    [key: string]: 'home';
+    [key: string]: 'map' | 'person' | 'book';
   } = {
-    Map: 'home'
+    Map: 'map',
+    User: 'person',
+    Quete: 'book'
   };
   return <Ionicons name={icons[route.name]} size={25} color={color} />;
 };
@@ -51,14 +54,19 @@ export function TabNavigator() {
         })}
       >
         <Tab.Screen
-          options={{ title: 'Map', tabBarVisible: false }}
+          options={{ title: 'Map' }}
           name="Map"
           component={MapStackScreen}
         />
         <Tab.Screen
-          options={{ title: 'User', tabBarVisible: true }}
+          options={{ title: 'Quetes' }}
+          name="Quete"
+          component={QueteStackScreen}
+        />
+        <Tab.Screen
+          options={{ title: 'Profil' }}
           name="User"
-          component={UserScreen}
+          component={UserStackScreen}
         />
       </Tab.Navigator>
     </NavigationContainer>

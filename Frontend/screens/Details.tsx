@@ -26,11 +26,15 @@ export default class Details extends Component<DetailsProps, DetailsState> {
       marker: null!
     };
   }
+
   componentDidMount() {
     const markerId = this.props.route.params.markerId;
-    const marker = MARKERS_DATA.find((marker) => marker.id === markerId);
-    if (marker) this.setState({ marker: marker });
+    setTimeout(() => {
+      const marker = MARKERS_DATA.find((marker) => marker.id === markerId);
+      if (marker) this.setState({ marker: marker });
+    }, 200);
   }
+
   render() {
     const { marker } = this.state;
     return marker ? (
@@ -49,12 +53,19 @@ export default class Details extends Component<DetailsProps, DetailsState> {
         </View>
       </View>
     ) : (
-      <ActivityIndicator />
+      <View style={styles.container}>
+        <ActivityIndicator size={'large'} color="#000000" />
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   detail: {
     textAlign: 'center',
     flexDirection: 'column'
