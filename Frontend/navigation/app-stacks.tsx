@@ -26,9 +26,9 @@ export interface NavigationProps {
 
 const stackScreenOptions: StackNavigationOptions = {
   headerStyle: {
-    backgroundColor: '#C0E8F7'
+    backgroundColor: '#4FB286'
   },
-  headerTintColor: '#2196F3',
+  headerTintColor: '#fff',
   headerTitleStyle: {
     fontWeight: 'bold'
   },

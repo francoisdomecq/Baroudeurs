@@ -32,10 +32,10 @@ const getTabBarIcon = (
 
 const tabBarOptions: BottomTabBarOptions = {
   style: {
-    backgroundColor: '#C0E8F7'
+    backgroundColor: '#4FB286'
   },
-  activeTintColor: '#2196F3',
-  inactiveTintColor: '#191716',
+  activeTintColor: '#fff',
+  inactiveTintColor: '#546D64',
   labelStyle: {
     fontSize: 10
   }
