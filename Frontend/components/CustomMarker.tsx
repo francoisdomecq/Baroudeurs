@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import { Callout, CalloutSubview, Marker } from 'react-native-maps';
 import { StyleSheet, View, Text, Image, Button } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
-import { MARKERS_DATA } from '../Data/Markers_Data';
 import FicheDescriptive from './FicheDescriptive';
-interface CustomMarkerProps extends NavigationProps {}
+import MarkerModel from '../services/Marker';
+interface CustomMarkerProps extends NavigationProps {
+  marker: MarkerModel;
+}
 
 //Ce custom component représente notre classe Point Interet et nous permet d'afficher nos différents points d'intérêts sur la carte
-class CustomMarker extends React.Component<CustomMarkerProps> {
+class CustomMarker extends Component<CustomMarkerProps> {
   render() {
     //On récupère ici les props passées par le component Map
-    const { navigation } = this.props;
+    const { navigation, marker } = this.props;
     {
       //Si jamais l'utilisateur n'a sélectionné aucun thème, on affiche tous les marqueurs
       {
@@ -19,40 +21,39 @@ class CustomMarker extends React.Component<CustomMarkerProps> {
             {
               //On récupère ci-dessous les informations de nos différents marqueurs stockées dans le fichier MARKERS_DATA et on affiche chaque marqueur
             }
-            {MARKERS_DATA.map((marker) => (
-              <Marker
-                //On attribue une key à chaque marqueur
-                key={marker.id}
-                //On modifie les marqueurs avec les images que nous leurs avons donné
 
-                //On définit ici les coordonnées où le marqueur doit être affiché
-                coordinate={{
-                  latitude: marker.latitude,
-                  longitude: marker.longitude
-                }}
-              >
+            <Marker
+              //On attribue une key à chaque marqueur
+              key={marker.id}
+              //On modifie les marqueurs avec les images que nous leurs avons donné
+
+              //On définit ici les coordonnées où le marqueur doit être affiché
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude
+              }}
+            >
+              {
+                //Les components Callout sont propres au component propre, ils permettent de la même manière qu'un component touchableopacity de gérer les clics sur les marqueurs
+              }
+
+              <Callout tooltip>
                 {
-                  //Les components Callout sont propres au component propre, ils permettent de la même manière qu'un component touchableopacity de gérer les clics sur les marqueurs
+                  //Le component calloutSubview permet de gérer les cas où l'utilisateur clique sur ce qui s'affiche après le premier clic sur le marqueur. Ici lors du premier clic
+                  //la fiche descriptive du point d'intérêt est affichée. Il peut de nouveau cliquer dessus et ainsi être redirigé vers la page détaillée du point d'intérêt
                 }
-
-                <Callout tooltip>
-                  {
-                    //Le component calloutSubview permet de gérer les cas où l'utilisateur clique sur ce qui s'affiche après le premier clic sur le marqueur. Ici lors du premier clic
-                    //la fiche descriptive du point d'intérêt est affichée. Il peut de nouveau cliquer dessus et ainsi être redirigé vers la page détaillée du point d'intérêt
-                  }
-                  <CalloutSubview
-                    onPress={() => {
-                      navigation.navigate('Details', { markerId: marker.id });
-                    }}
-                  >
-                    <FicheDescriptive
-                      markers={marker}
-                      navigation={this.props.navigation}
-                    />
-                  </CalloutSubview>
-                </Callout>
-              </Marker>
-            ))}
+                <CalloutSubview
+                  onPress={() => {
+                    navigation.navigate('Details', { markerId: marker.id });
+                  }}
+                >
+                  <FicheDescriptive
+                    markers={marker}
+                    navigation={this.props.navigation}
+                  />
+                </CalloutSubview>
+              </Callout>
+            </Marker>
           </View>
         );
       }

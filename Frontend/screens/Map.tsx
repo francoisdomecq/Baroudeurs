@@ -19,6 +19,9 @@ import { SteCroix } from '../Data/SteCroix';
 import { StPaul } from '../Data/StPaul';
 import { StPierre } from '../Data/StPierre';
 import { Victoire } from '../Data/Victoire';
+import { MARKERS_DATA } from '../Data/Markers_Data';
+import { THEMES } from '../Data/THEME';
+import Marker from '../services/Marker';
 
 interface MapProps extends NavigationProps {}
 
@@ -26,9 +29,11 @@ interface MapState {
   colorScheme: string;
   latitude: number;
   longitude: number;
-  cityPicked: { latitude: number; longitude: number };
+  cityPicked: { name: string; latitude: number; longitude: number };
   userType: string;
   formDone: boolean;
+  markers: Array<Marker>;
+  themeChoisi: string;
 }
 export default class MapScreen extends Component<MapProps, MapState> {
   constructor(public props: MapProps) {
@@ -39,16 +44,30 @@ export default class MapScreen extends Component<MapProps, MapState> {
       longitude: 0,
       cityPicked: null!,
       userType: null!,
-      formDone: false
+      formDone: false,
+      markers: [],
+      themeChoisi: ''
     };
   }
 
   selectCity(city: any) {
     this.setState({
-      cityPicked: { latitude: city.latitude, longitude: city.longitude }
+      cityPicked: {
+        name: city.name,
+        latitude: city.latitude,
+        longitude: city.longitude
+      }
     });
     this.setState({ latitude: city.latitude });
     this.setState({ longitude: city.longitude });
+  }
+
+  selectTheme(theme: string) {
+    this.setState({ themeChoisi: theme });
+    const filteredMarkers = MARKERS_DATA.filter((marker) => {
+      if (marker.theme === theme) return marker;
+    });
+    this.setState({ markers: filteredMarkers });
   }
 
   componentDidMount() {
@@ -57,11 +76,20 @@ export default class MapScreen extends Component<MapProps, MapState> {
     // });
     const colorScheme = Appearance.getColorScheme();
     if (colorScheme) this.setState({ colorScheme });
+    this.setState({ markers: MARKERS_DATA });
   }
 
   render() {
-    const { latitude, longitude, cityPicked, colorScheme, formDone, userType } =
-      this.state;
+    const {
+      latitude,
+      longitude,
+      cityPicked,
+      colorScheme,
+      formDone,
+      userType,
+      markers,
+      themeChoisi
+    } = this.state;
     const cities = [
       {
         id: 1,
@@ -73,8 +101,8 @@ export default class MapScreen extends Component<MapProps, MapState> {
       {
         id: 2,
         name: 'Marseille',
-        latitude: 48.856614,
-        longitude: 2.3522219,
+        latitude: 43.2961743,
+        longitude: 5.3699525,
         coords: polygon
       },
       {
@@ -87,32 +115,32 @@ export default class MapScreen extends Component<MapProps, MapState> {
       {
         id: 4,
         name: 'Lyon',
-        latitude: 48.856614,
-        longitude: 2.3522219,
+        latitude: 45.7578137,
+        longitude: 4.8320114,
         coords: polygon
       },
       {
         id: 5,
         name: 'Lilles',
-        latitude: 48.856614,
-        longitude: 2.3522219,
+        latitude: 59.9566415,
+        longitude: 11.0476837,
         coords: polygon
       }
     ];
-    colorScheme ? console.log({ colorScheme }) : null;
+    console.log(themeChoisi);
     return formDone ? (
       <View
         style={styles.container}
-        onTouchStart={() =>
-          this.props.navigation.setOptions({
-            headerShown: true
-          })
-        }
-        onTouchEnd={() =>
-          this.props.navigation.setOptions({
-            headerShown: false
-          })
-        }
+        // onTouchStart={() =>
+        //   this.props.navigation.setOptions({
+        //     headerShown: true
+        //   })
+        // }
+        // onTouchEnd={() =>
+        //   this.props.navigation.setOptions({
+        //     headerShown: false
+        //   })
+        // }
       >
         <MapView
           initialRegion={{
@@ -147,14 +175,43 @@ export default class MapScreen extends Component<MapProps, MapState> {
           // pitchEnabled={false}
         >
           <Polyline coordinates={polygon} strokeWidth={2} />
-          <Polyline coordinates={GdHommes} strokeWidth={2} />
+          {/* <Polyline coordinates={GdHommes} strokeWidth={2} />
           <Polyline coordinates={SteCroix} strokeWidth={2} />
           <Polyline coordinates={StMichel} strokeWidth={2} />
           <Polyline coordinates={StPaul} strokeWidth={2} />
           <Polyline coordinates={StPierre} strokeWidth={2} />
-          <Polyline coordinates={Victoire} strokeWidth={2} />
-          <CustomMarker navigation={this.props.navigation} />
+          <Polyline coordinates={Victoire} strokeWidth={2} /> */}
+          {markers.map((marker) => {
+            return (
+              <CustomMarker
+                key={marker.id}
+                marker={marker}
+                navigation={this.props.navigation}
+              />
+            );
+          })}
         </MapView>
+        <ScrollView
+          horizontal
+          scrollEventThrottle={1}
+          showsHorizontalScrollIndicator={false}
+          style={styles.scrollview}
+        >
+          {
+            //On récupère ici les différents thèmes que nous avons défini dans Themes.js
+            THEMES.map((themes) => (
+              // Un component TouchableOpacity permet à l'utilisateur de cliquer dessus et de lancer un event suite au clic
+              <TouchableOpacity
+                key={themes.id}
+                style={styles.itemsTheme}
+                //Ici l'event lorsque l'utilisateur clique sur un thème et que l'on appelle la fonction _choixTheme qui actualise le state de themeChoisi
+                onPress={() => this.selectTheme(themes.name)}
+              >
+                <Text>{themes.name}</Text>
+              </TouchableOpacity>
+            ))
+          }
+        </ScrollView>
       </View>
     ) : (
       <View style={styles.containerModal}>
@@ -182,43 +239,49 @@ export default class MapScreen extends Component<MapProps, MapState> {
             })}
           </ScrollView>
         </View>
-        <View style={styles.containerBaroudeur}>
-          <Text style={styles.textTitle}>A Bordeaux, vous êtes :</Text>
-          <View style={styles.containerImage}>
-            <TouchableOpacity
-              style={styles.imageText}
-              activeOpacity={0.2}
-              onPress={() => this.setState({ userType: 'Explorateur' })}
-            >
-              <Image
-                style={styles.image}
-                source={require('../assets/explorer.png')}
-              />
-              <Text style={styles.textUnderImage}>Explorateur</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.imageText}
-              activeOpacity={0.7}
-              onPress={() => this.setState({ userType: 'Resident' })}
-            >
-              <Image
-                style={styles.image}
-                source={require('../assets/resident.png')}
-              />
-              <Text style={styles.textUnderImage}>Résident</Text>
-            </TouchableOpacity>
+        {cityPicked ? (
+          <View style={styles.containerBaroudeur}>
+            <Text style={styles.textTitle}>
+              A {cityPicked.name}, vous êtes :
+            </Text>
+            <View style={styles.containerImage}>
+              <TouchableOpacity
+                style={styles.imageText}
+                activeOpacity={0.2}
+                onPress={() => this.setState({ userType: 'Explorateur' })}
+              >
+                <Image
+                  style={styles.image}
+                  source={require('../assets/explorer.png')}
+                />
+                <Text style={styles.textUnderImage}>Explorateur</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.imageText}
+                activeOpacity={0.7}
+                onPress={() => this.setState({ userType: 'Resident' })}
+              >
+                <Image
+                  style={styles.image}
+                  source={require('../assets/resident.png')}
+                />
+                <Text style={styles.textUnderImage}>Résident</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <TouchableOpacity
-          style={styles.buttonValider}
-          onPress={() =>
-            cityPicked !== null && userType !== null
-              ? this.setState({ formDone: true })
-              : alert('Veuillez compléter les champs requis')
-          }
-        >
-          <Text style={styles.textButton}>Valider</Text>
-        </TouchableOpacity>
+        ) : null}
+        {cityPicked && userType ? (
+          <TouchableOpacity
+            style={styles.buttonValider}
+            onPress={() =>
+              cityPicked !== null && userType !== null
+                ? this.setState({ formDone: true })
+                : alert('Veuillez compléter les champs requis')
+            }
+          >
+            <Text style={styles.textButton}>Valider</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     );
   }
@@ -299,5 +362,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
     alignSelf: 'center'
+  },
+  scrollview: {
+    position: 'absolute',
+    paddingLeft: '1%',
+    paddingRight: '1%',
+    top: '2%'
+  },
+  itemsTheme: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 0,
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
+    height: 22
   }
 });
