@@ -5,7 +5,7 @@ import {
   StackNavigationProp
 } from '@react-navigation/stack';
 
-import Map from '../screens/Map';
+import Map from '../screens/MapScreen/Screen';
 import User from '../screens/User';
 import Details from '../screens/Details';
 import Quete from '../screens/Quetes';
