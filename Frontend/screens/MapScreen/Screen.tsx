@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Appearance } from 'react-native';
 import { NavigationProps } from '../../navigation/app-stacks';
 
+import FormService from '../../services/Form';
+
 import Form from './Form';
 import Map from './Map';
 
@@ -44,9 +46,22 @@ export default class MapScreen extends Component<MapProps, MapState> {
     this.setState({ userType });
   };
 
-  setFormDone = () => {
+  setFormDone = (
+    cityPicked: { name: string; latitude: number; longitude: number },
+    userType: string
+  ) => {
+    FormService.setFormDone({ cityPicked, userType });
     this.setState({ formDone: true });
   };
+
+  async isFormDone() {
+    const Form = await FormService.getFormState();
+    if (Form !== undefined) {
+      this.selectCity(Form.cityPicked);
+      this.setState({ userType: Form.userType });
+      this.setState({ formDone: true });
+    } else this.setState({ formDone: false });
+  }
 
   setLocation = (latitude: number, longitude: number) => {
     this.setState({ latitude });
@@ -54,9 +69,7 @@ export default class MapScreen extends Component<MapProps, MapState> {
   };
 
   componentDidMount() {
-    // this.props.navigation.setOptions({
-    //   headerShown: false
-    // });
+    this.isFormDone();
     const colorScheme = Appearance.getColorScheme();
     if (colorScheme) this.setState({ colorScheme });
   }

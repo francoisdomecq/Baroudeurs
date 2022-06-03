@@ -1,8 +1,10 @@
 import { Component, ReactNode } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+
 const explorateur = require('../../assets/explorer.png');
 const resident = require('../../assets/resident.png');
+
 interface FormProps {
   cityPicked: { name: string; latitude: number; longitude: number };
   userType: string;
@@ -141,7 +143,7 @@ export default class Form extends Component<FormProps, FormState> {
             style={styles.buttonValider}
             onPress={() =>
               cityPicked !== null && userType !== null
-                ? setFormDone()
+                ? setFormDone(cityPicked,userType)
                 : alert('Veuillez compléter les champs requis')
             }
           >
