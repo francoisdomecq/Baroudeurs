@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, Appearance } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { Polyline } from 'react-native-maps';
+import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 
 import CustomMarker from '../../components/CustomMarker';
@@ -16,7 +16,7 @@ import { Victoire } from '../../Data/Victoire';
 import { MARKERS_DATA } from '../../Data/Markers_Data';
 import { THEMES } from '../../Data/Theme';
 
-import Marker from '../../services/Marker';
+import MarkerModel from '../../services/Marker';
 
 interface MapProps extends NavigationProps {
   latitude: number;
@@ -27,7 +27,7 @@ interface MapProps extends NavigationProps {
 }
 
 interface MapState {
-  markers: Array<Marker>;
+  markers: Array<MarkerModel>;
   themeChoisi: string;
 }
 export default class Map extends Component<MapProps, MapState> {
@@ -96,12 +96,18 @@ export default class Map extends Component<MapProps, MapState> {
           // Only on iOS MapKit, in meters. The property is ignored by Google Maps.
 
           style={styles.map}
-          showsUserLocation={true}
+          //   showsUserLocation={true}
           showsCompass={true}
           showsMyLocationButton={true}
           // zoomEnabled={false}
           // pitchEnabled={false}
         >
+          <Marker
+            coordinate={{
+              latitude: latitude,
+              longitude: longitude
+            }}
+          />
           <Polyline coordinates={polygon} strokeWidth={2} />
           {/* <Polyline coordinates={GdHommes} strokeWidth={2} />
           <Polyline coordinates={SteCroix} strokeWidth={2} />

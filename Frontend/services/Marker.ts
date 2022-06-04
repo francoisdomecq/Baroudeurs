@@ -1,3 +1,5 @@
+import { Image, ImageProps } from 'react-native';
+
 export default class Marker {
   constructor(
     public id: number,

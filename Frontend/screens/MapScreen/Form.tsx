@@ -1,9 +1,48 @@
 import { Component, ReactNode } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  TextInput
+} from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 
 const explorateur = require('../../assets/explorer.png');
 const resident = require('../../assets/resident.png');
+const cities = [
+  {
+    id: 1,
+    name: 'Bordeaux',
+    latitude: 44.837789,
+    longitude: -0.57918
+  },
+  {
+    id: 2,
+    name: 'Marseille',
+    latitude: 43.2961743,
+    longitude: 5.3699525
+  },
+  {
+    id: 3,
+    name: 'Paris',
+    latitude: 48.856614,
+    longitude: 2.3522219
+  },
+  {
+    id: 4,
+    name: 'Lyon',
+    latitude: 45.7578137,
+    longitude: 4.8320114
+  },
+  {
+    id: 5,
+    name: 'Lilles',
+    latitude: 59.9566415,
+    longitude: 11.0476837
+  }
+];
 
 interface FormProps {
   cityPicked: { name: string; latitude: number; longitude: number };
@@ -16,6 +55,19 @@ interface FormProps {
 interface FormState {
   selectedCity: string;
   selectedUserType: string;
+  constantCities: Array<{
+    id: number;
+    name: string;
+    latitude: number;
+    longitude: number;
+  }>;
+  cities: Array<{
+    id: number;
+    name: string;
+    latitude: number;
+    longitude: number;
+  }>;
+  searchFiled: string;
 }
 
 export default class Form extends Component<FormProps, FormState> {
@@ -23,8 +75,18 @@ export default class Form extends Component<FormProps, FormState> {
     super(props);
     this.state = {
       selectedCity: '',
-      selectedUserType: ''
+      selectedUserType: '',
+      searchFiled: '',
+      constantCities: [],
+      cities: []
     };
+  }
+
+  searchCities(search: string) {
+    const citiesFiltered = this.state.constantCities.filter((city) => {
+      return city.name.includes(search);
+    });
+    this.setState({ cities: citiesFiltered });
   }
 
   selectCity(city: any) {
@@ -36,40 +98,14 @@ export default class Form extends Component<FormProps, FormState> {
     this.setState({ selectedUserType: user });
     this.props.setUserType(user);
   }
+
+  componentDidMount() {
+    this.setState({ cities: cities });
+    this.setState({ constantCities: cities });
+  }
   render() {
-    const cities = [
-      {
-        id: 1,
-        name: 'Bordeaux',
-        latitude: 44.837789,
-        longitude: -0.57918
-      },
-      {
-        id: 2,
-        name: 'Marseille',
-        latitude: 43.2961743,
-        longitude: 5.3699525
-      },
-      {
-        id: 3,
-        name: 'Paris',
-        latitude: 48.856614,
-        longitude: 2.3522219
-      },
-      {
-        id: 4,
-        name: 'Lyon',
-        latitude: 45.7578137,
-        longitude: 4.8320114
-      },
-      {
-        id: 5,
-        name: 'Lilles',
-        latitude: 59.9566415,
-        longitude: 11.0476837
-      }
-    ];
     const { userType, cityPicked, setUserType, setFormDone } = this.props;
+    const { cities, selectedUserType, selectedCity } = this.state;
 
     return explorateur && resident ? (
       <View style={styles.containerModal}>
@@ -77,6 +113,21 @@ export default class Form extends Component<FormProps, FormState> {
           <Text style={styles.textTitle}>
             Sélectionnez la ville que vous souhaitez explorer
           </Text>
+          <View
+            style={{
+              height: 20,
+              backgroundColor: '#4FB286',
+              width: '80%',
+              borderRadius: 10
+            }}
+          >
+            <TextInput
+              style={{
+                textAlign: 'center'
+              }}
+              onChange={(e) => this.searchCities(e.nativeEvent.text)}
+            />
+          </View>
           <ScrollView
             style={styles.containerScrollview}
             contentContainerStyle={{
@@ -84,20 +135,25 @@ export default class Form extends Component<FormProps, FormState> {
               alignItems: 'center'
             }}
           >
-            {cities.map((city) => {
-              return (
-                <Text
-                  style={
-                    stylesProps(city.name === this.state.selectedCity ? 1 : 0.6)
-                      .textCity
-                  }
-                  key={city.id}
-                  onPress={() => this.selectCity(city)}
-                >
-                  {city.name}
-                </Text>
-              );
-            })}
+            {cities.length > 0 ? (
+              cities.map((city) => {
+                return (
+                  <Text
+                    style={
+                      stylesProps(city.name === selectedCity ? 1 : 0.6).textCity
+                    }
+                    key={city.id}
+                    onPress={() => this.selectCity(city)}
+                  >
+                    {city.name}
+                  </Text>
+                );
+              })
+            ) : (
+              <Text style={stylesProps(1).textCity}>
+                Aucune vile ne correspond
+              </Text>
+            )}
           </ScrollView>
         </View>
         {cityPicked ? (
@@ -112,9 +168,8 @@ export default class Form extends Component<FormProps, FormState> {
               >
                 <Image
                   style={
-                    stylesProps(
-                      this.state.selectedUserType === 'Explorateur' ? 0.6 : 1
-                    ).image
+                    stylesProps(selectedUserType === 'Explorateur' ? 0.6 : 1)
+                      .image
                   }
                   // source={require('../../assets/explorer.png')}
                   source={explorateur}
@@ -127,9 +182,7 @@ export default class Form extends Component<FormProps, FormState> {
               >
                 <Image
                   style={
-                    stylesProps(
-                      this.state.selectedUserType === 'Résident' ? 0.6 : 1
-                    ).image
+                    stylesProps(selectedUserType === 'Résident' ? 0.6 : 1).image
                   }
                   source={resident}
                 />
@@ -143,7 +196,7 @@ export default class Form extends Component<FormProps, FormState> {
             style={styles.buttonValider}
             onPress={() =>
               cityPicked !== null && userType !== null
-                ? setFormDone(cityPicked,userType)
+                ? setFormDone(cityPicked, userType)
                 : alert('Veuillez compléter les champs requis')
             }
           >
@@ -183,7 +236,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#4FB286',
     borderRadius: 10,
     marginTop: '3%',
-    shadowColor: '#000'
+    shadowColor: '#000',
+    paddingBottom: '2%'
   },
   textCity: {
     fontSize: 18,

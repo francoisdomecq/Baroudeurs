@@ -32,6 +32,8 @@ class CustomMarker extends Component<CustomMarkerProps> {
                 latitude: marker.latitude,
                 longitude: marker.longitude
               }}
+              // image={marker.imgmarker}
+              calloutOffset={{ x: 0, y: -5 }}
             >
               {
                 //Les components Callout sont propres au component propre, ils permettent de la même manière qu'un component touchableopacity de gérer les clics sur les marqueurs
@@ -79,20 +81,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: 'white',
     borderWidth: 2
-  },
-  tinyLogo: {
-    width: 50,
-    height: 50
-  },
-  ficheDescriptive: {
-    flexDirection: 'column',
-    alignSelf: 'flex-start',
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    borderLeftColor: '#ccc'
-  },
-  name: {
-    fontSize: 16,
-    marginBottom: 5
   }
 });

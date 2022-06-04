@@ -17,7 +17,7 @@ export default class FicheDescriptive extends Component<FicheDescriptiveProps> {
           <Text style={styles.name}>{markers.name}</Text>
         </View>
         <View style={styles.containerImage}>
-          <Image style={styles.image} source={{ uri: markers.img }}></Image>
+          <Image style={styles.image} source={markers.img}></Image>
         </View>
         <View style={styles.containerDescription}>
           <Text style={styles.description} numberOfLines={7}>

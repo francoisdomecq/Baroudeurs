@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Appearance } from 'react-native';
 import { NavigationProps } from '../../navigation/app-stacks';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormService from '../../services/Form';
 
 import Form from './Form';
@@ -69,6 +70,7 @@ export default class MapScreen extends Component<MapProps, MapState> {
   };
 
   componentDidMount() {
+    AsyncStorage.clear();
     this.isFormDone();
     const colorScheme = Appearance.getColorScheme();
     if (colorScheme) this.setState({ colorScheme });
