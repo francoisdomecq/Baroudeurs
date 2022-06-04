@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Appearance } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
+import { Ionicons } from '@expo/vector-icons';
 
 import CustomMarker from '../../components/CustomMarker';
 
@@ -17,6 +18,7 @@ import { MARKERS_DATA } from '../../Data/Markers_Data';
 import { THEMES } from '../../Data/Theme';
 
 import MarkerModel from '../../services/Marker';
+import ThemeButton from '../../components/ThemeButton';
 
 interface MapProps extends NavigationProps {
   latitude: number;
@@ -29,23 +31,31 @@ interface MapProps extends NavigationProps {
 interface MapState {
   markers: Array<MarkerModel>;
   themeChoisi: string;
+  displayTheme: boolean;
 }
 export default class Map extends Component<MapProps, MapState> {
   constructor(public props: MapProps) {
     super(props);
     this.state = {
       markers: [],
-      themeChoisi: ''
+      themeChoisi: '',
+      displayTheme: false
     };
   }
 
-  selectTheme(theme: string) {
-    this.setState({ themeChoisi: theme });
-    const filteredMarkers = MARKERS_DATA.filter((marker) => {
-      if (marker.theme === theme) return marker;
-    });
-    this.setState({ markers: filteredMarkers });
-  }
+  selectTheme = (theme: string) => {
+    if (theme !== 'Annuler') {
+      this.setState({ themeChoisi: theme });
+      const filteredMarkers = MARKERS_DATA.filter((marker) => {
+        if (marker.theme === theme) return marker;
+      });
+      this.setState({ markers: filteredMarkers });
+      this.setState({ displayTheme: false });
+    } else {
+      this.setState({ markers: MARKERS_DATA });
+      this.setState({ displayTheme: false });
+    }
+  };
 
   componentDidMount() {
     this.setState({ markers: MARKERS_DATA });
@@ -125,27 +135,38 @@ export default class Map extends Component<MapProps, MapState> {
             );
           })}
         </MapView>
-        <ScrollView
-          horizontal
-          scrollEventThrottle={1}
-          showsHorizontalScrollIndicator={false}
-          style={styles.scrollview}
-        >
-          {
-            //On récupère ici les différents thèmes que nous avons défini dans Themes.js
-            THEMES.map((themes) => (
-              // Un component TouchableOpacity permet à l'utilisateur de cliquer dessus et de lancer un event suite au clic
-              <TouchableOpacity
-                key={themes.id}
-                style={styles.itemsTheme}
-                //Ici l'event lorsque l'utilisateur clique sur un thème et que l'on appelle la fonction _choixTheme qui actualise le state de themeChoisi
-                onPress={() => this.selectTheme(themes.name)}
-              >
-                <Text>{themes.name}</Text>
-              </TouchableOpacity>
-            ))
-          }
-        </ScrollView>
+        {this.state.displayTheme ? (
+          <ScrollView
+            horizontal
+            scrollEventThrottle={1}
+            showsHorizontalScrollIndicator={false}
+            style={styles.scrollview}
+          >
+            {
+              //On récupère ici les différents thèmes que nous avons défini dans Themes.js
+              THEMES.map((theme) => (
+                <ThemeButton
+                  theme={theme}
+                  selectTheme={this.selectTheme}
+                  themeChoisi={this.state.themeChoisi}
+                />
+              ))
+            }
+          </ScrollView>
+        ) : (
+          <View style={styles.viewThemeChoisi}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => this.setState({ displayTheme: true })}
+            >
+              <Ionicons
+                name="arrow-forward-circle-outline"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }
@@ -166,13 +187,19 @@ const styles = StyleSheet.create({
     paddingRight: '1%',
     top: '2%'
   },
-  itemsTheme: {
-    flexDirection: 'row',
+  viewThemeChoisi: {
+    position: 'absolute',
+    paddingLeft: '1%',
+    paddingRight: '1%',
+    top: '2%',
+    left: '1%'
+  },
+  button: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 0,
-    paddingHorizontal: 20,
-    marginHorizontal: 5,
-    height: 22
+    width: 24,
+    height: 24,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
