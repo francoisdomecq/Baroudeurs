@@ -8,17 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import CustomMarker from '../../components/CustomMarker';
 
 import { polygon } from '../../Data/Bdx';
-import { StMichel } from '../../Data/StMichel';
-import { GdHommes } from '../../Data/GdHommes';
-import { SteCroix } from '../../Data/SteCroix';
-import { StPaul } from '../../Data/StPaul';
-import { StPierre } from '../../Data/StPierre';
-import { Victoire } from '../../Data/Victoire';
 import { MARKERS_DATA } from '../../Data/Markers_Data';
-import { THEMES } from '../../Data/Theme';
 
 import MarkerModel from '../../services/Marker';
-import ThemeButton from '../../components/ThemeButton';
+import ModalMap from '../../components/ModalMap';
 
 interface MapProps extends NavigationProps {
   latitude: number;
@@ -30,41 +23,63 @@ interface MapProps extends NavigationProps {
 
 interface MapState {
   markers: Array<MarkerModel>;
-  themeChoisi: string;
-  displayTheme: boolean;
+  themeChoisi: Array<string>;
+  displayModal: boolean;
 }
 export default class Map extends Component<MapProps, MapState> {
   constructor(public props: MapProps) {
     super(props);
     this.state = {
       markers: [],
-      themeChoisi: '',
-      displayTheme: false
+      themeChoisi: [],
+      displayModal: false
     };
   }
 
+  setModalVisible = (modalVisible: boolean) => {
+    this.setState({ displayModal: modalVisible });
+  };
+
   selectTheme = (theme: string) => {
-    if (theme !== 'Annuler') {
-      this.setState({ themeChoisi: theme });
-      const filteredMarkers = MARKERS_DATA.filter((marker) => {
-        if (marker.theme === theme) return marker;
-      });
-      this.setState({ markers: filteredMarkers });
-      this.setState({ displayTheme: false });
+    if (this.state.themeChoisi.includes(theme)) {
+      const newThemesArray = [...this.state.themeChoisi];
+      newThemesArray.splice(newThemesArray.indexOf(theme));
+      if (newThemesArray.length === 0) {
+        this.setState({ markers: MARKERS_DATA });
+        this.setState({ themeChoisi: newThemesArray });
+      } else {
+        this.setState({ themeChoisi: newThemesArray });
+        this.filter();
+      }
     } else {
-      this.setState({ markers: MARKERS_DATA });
-      this.setState({ displayTheme: false });
+      if (theme !== 'Annuler') {
+        const newTheme = [...this.state.themeChoisi, theme];
+        this.setState({ themeChoisi: newTheme });
+        this.filter();
+        // this.setState({ displayModal: false });
+      } else {
+        this.setState({ themeChoisi: [] });
+        this.setState({ markers: MARKERS_DATA });
+        this.setState({ displayModal: false });
+      }
     }
   };
 
+  filter() {
+    const filteredMarkers = MARKERS_DATA.filter((marker) => {
+      if (this.state.themeChoisi.includes(marker.theme)) return marker;
+    });
+    this.setState({ markers: filteredMarkers });
+  }
   componentDidMount() {
     this.setState({ markers: MARKERS_DATA });
   }
 
   render() {
-    const { markers } = this.state;
+    const { markers, displayModal, themeChoisi } = this.state;
     const { latitude, longitude, userType, cityPicked, setLocation } =
       this.props;
+    // console.log(themeChoisi);
     return (
       <View
         style={styles.container}
@@ -112,19 +127,14 @@ export default class Map extends Component<MapProps, MapState> {
           // zoomEnabled={false}
           // pitchEnabled={false}
         >
-          <Marker
+          {/* <Marker
             coordinate={{
               latitude: latitude,
               longitude: longitude
             }}
-          />
+          /> */}
           <Polyline coordinates={polygon} strokeWidth={2} />
-          {/* <Polyline coordinates={GdHommes} strokeWidth={2} />
-          <Polyline coordinates={SteCroix} strokeWidth={2} />
-          <Polyline coordinates={StMichel} strokeWidth={2} />
-          <Polyline coordinates={StPaul} strokeWidth={2} />
-          <Polyline coordinates={StPierre} strokeWidth={2} />
-          <Polyline coordinates={Victoire} strokeWidth={2} /> */}
+
           {markers.map((marker) => {
             return (
               <CustomMarker
@@ -135,38 +145,21 @@ export default class Map extends Component<MapProps, MapState> {
             );
           })}
         </MapView>
-        {this.state.displayTheme ? (
-          <ScrollView
-            horizontal
-            scrollEventThrottle={1}
-            showsHorizontalScrollIndicator={false}
-            style={styles.scrollview}
+
+        <View style={styles.viewThemeChoisi}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.setModalVisible(true)}
           >
-            {
-              //On récupère ici les différents thèmes que nous avons défini dans Themes.js
-              THEMES.map((theme) => (
-                <ThemeButton
-                  theme={theme}
-                  selectTheme={this.selectTheme}
-                  themeChoisi={this.state.themeChoisi}
-                />
-              ))
-            }
-          </ScrollView>
-        ) : (
-          <View style={styles.viewThemeChoisi}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => this.setState({ displayTheme: true })}
-            >
-              <Ionicons
-                name="arrow-forward-circle-outline"
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-          </View>
-        )}
+            <Ionicons name="menu" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+        <ModalMap
+          setModalVisible={this.setModalVisible}
+          modalVisible={displayModal}
+          selectTheme={this.selectTheme}
+          themeChoisi={this.state.themeChoisi}
+        />
       </View>
     );
   }
@@ -181,12 +174,7 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject
   },
-  scrollview: {
-    position: 'absolute',
-    paddingLeft: '1%',
-    paddingRight: '1%',
-    top: '2%'
-  },
+
   viewThemeChoisi: {
     position: 'absolute',
     paddingLeft: '1%',

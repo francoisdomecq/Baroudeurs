@@ -70,7 +70,7 @@ export default class MapScreen extends Component<MapProps, MapState> {
   };
 
   componentDidMount() {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
     this.isFormDone();
     const colorScheme = Appearance.getColorScheme();
     if (colorScheme) this.setState({ colorScheme });
