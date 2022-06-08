@@ -4,7 +4,11 @@ const connect = require('./connect');
 const { setMaxListeners } = require('./models/City');
 
 const CityRoutes = require('./routes/City');
+<<<<<<< HEAD
 const PIRoutes = require('./routes/PointInteret');
+=======
+
+>>>>>>> 0bd289abe59e0d1c46fd417e5930a1cd298ee9d4
 const app = express();
 
 //Middleware pour gérer le système de sécurité CORS qui bloque les appels HTTP entre des serveurs différents.
