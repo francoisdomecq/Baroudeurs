@@ -13,7 +13,7 @@ exports.createCity = (req, res, next) => {
     .save(JSON.stringify(city))
     .then(() => {
       res.status(201).json({
-        message: `${city.nom} saved succesfully`
+        message: `${city.name} saved succesfully`
       });
     })
     .catch((error) => {
@@ -40,7 +40,10 @@ exports.getOneCity = (req, res, next) => {
 exports.modifyCity = (req, res, next) => {
   const city = new City({
     _id: req.params.id,
-    nom: req.body.nom
+    name: req.body.name,
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
+    polygon: req.body.polygon
   });
   city
     .updateOne({ _id: req.params.id }, city)

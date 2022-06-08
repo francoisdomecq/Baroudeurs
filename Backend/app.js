@@ -4,7 +4,7 @@ const connect = require('./connect');
 const { setMaxListeners } = require('./models/City');
 
 const CityRoutes = require('./routes/City');
-
+const PIRoutes = require('./routes/PointInteret');
 const app = express();
 
 //Middleware pour gérer le système de sécurité CORS qui bloque les appels HTTP entre des serveurs différents.
@@ -30,5 +30,6 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 
 app.use('/api/city', CityRoutes);
+app.use('/api/pointinteret', PIRoutes);
 
 module.exports = app;

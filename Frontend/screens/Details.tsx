@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
 import { RouteProp } from '@react-navigation/core';
-import Marker from '../services/Marker';
+import Marker from '../services/point_interet.model';
 import { MARKERS_DATA } from '../Data/Markers_Data';
 interface DetailsProps extends NavigationProps {
   route: RouteProp<RootStackParamList, 'Details'>;

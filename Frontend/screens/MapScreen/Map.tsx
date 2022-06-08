@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, Appearance } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Appearance,
+  ActivityIndicator
+} from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
 
 import CustomMarker from '../../components/CustomMarker';
+import ModalMap from '../../components/ModalMap';
 
 import { polygon } from '../../Data/Bdx';
 import { MARKERS_DATA } from '../../Data/Markers_Data';
 
-import MarkerModel from '../../services/Marker';
-import ModalMap from '../../components/ModalMap';
+import MarkerApi from '../../services/point_interet.api_service';
+import MarkerModel from '../../services/point_interet.model';
 
 interface MapProps extends NavigationProps {
   latitude: number;
@@ -71,8 +78,17 @@ export default class Map extends Component<MapProps, MapState> {
     });
     this.setState({ markers: filteredMarkers });
   }
+
+  loadMarkers = () => {
+    MarkerApi.getPI().then((marker) => {
+      console.log(marker);
+      this.setState({ markers: marker });
+    });
+  };
+
   componentDidMount() {
-    this.setState({ markers: MARKERS_DATA });
+    // this.setState({ markers: MARKERS_DATA });
+    this.loadMarkers();
   }
 
   render() {
@@ -80,7 +96,7 @@ export default class Map extends Component<MapProps, MapState> {
     const { latitude, longitude, userType, cityPicked, setLocation } =
       this.props;
     // console.log(themeChoisi);
-    return (
+    return markers ? (
       <View
         style={styles.container}
         // onTouchStart={() =>
@@ -160,6 +176,10 @@ export default class Map extends Component<MapProps, MapState> {
           selectTheme={this.selectTheme}
           themeChoisi={this.state.themeChoisi}
         />
+      </View>
+    ) : (
+      <View>
+        <ActivityIndicator />
       </View>
     );
   }

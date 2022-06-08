@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { NavigationProps } from '../navigation/app-stacks';
-import Marker from '../services/Marker';
+import Marker from '../services/point_interet.model';
 
 interface FicheDescriptiveProps extends NavigationProps {
   markers: Marker;

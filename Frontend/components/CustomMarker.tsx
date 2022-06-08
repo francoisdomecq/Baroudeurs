@@ -3,7 +3,7 @@ import { Callout, CalloutSubview, Marker } from 'react-native-maps';
 import { StyleSheet, View, Text, Image, Button } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
 import FicheDescriptive from './FicheDescriptive';
-import MarkerModel from '../services/Marker';
+import MarkerModel from '../services/point_interet.model';
 interface CustomMarkerProps extends NavigationProps {
   marker: MarkerModel;
 }
