@@ -8,7 +8,7 @@ import City from '../../services/city.model';
 
 import Form from './Form';
 import Map from './Map';
-import { polygon } from '../../Data/Bdx';
+
 
 interface MapProps extends NavigationProps {}
 
