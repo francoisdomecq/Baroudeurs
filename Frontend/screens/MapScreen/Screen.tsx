@@ -4,9 +4,11 @@ import { NavigationProps } from '../../navigation/app-stacks';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormService from '../../services/form_async';
+import City from '../../services/city.model';
 
 import Form from './Form';
 import Map from './Map';
+import { polygon } from '../../Data/Bdx';
 
 interface MapProps extends NavigationProps {}
 
@@ -14,7 +16,7 @@ interface MapState {
   colorScheme: string;
   latitude: number;
   longitude: number;
-  cityPicked: { name: string; latitude: number; longitude: number };
+  cityPicked: City;
   userType: string;
   formDone: boolean;
 }
@@ -31,13 +33,9 @@ export default class MapScreen extends Component<MapProps, MapState> {
     };
   }
 
-  selectCity = (city: any) => {
+  selectCity = (city: City) => {
     this.setState({
-      cityPicked: {
-        name: city.name,
-        latitude: city.latitude,
-        longitude: city.longitude
-      }
+      cityPicked: city
     });
     this.setState({ latitude: city.latitude });
     this.setState({ longitude: city.longitude });
@@ -47,10 +45,7 @@ export default class MapScreen extends Component<MapProps, MapState> {
     this.setState({ userType });
   };
 
-  setFormDone = (
-    cityPicked: { name: string; latitude: number; longitude: number },
-    userType: string
-  ) => {
+  setFormDone = (cityPicked: City, userType: string) => {
     FormService.setFormDone({ cityPicked, userType });
     this.setState({ formDone: true });
   };

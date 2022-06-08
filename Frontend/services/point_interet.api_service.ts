@@ -3,7 +3,7 @@ import PointInteret from './point_interet.model';
 const rootEndpoint = 'https://baroudeurs.herokuapp.com/api/pointinteret';
 
 interface pointInteret {
-  id: number;
+  _id: string;
   name: string;
   latitude: number;
   longitude: number;
@@ -27,7 +27,7 @@ class EleveApi {
   }
 
   //récupère un élève en fonction de l'id
-  public getEleveFromId(id: number): Promise<PointInteret> {
+  public getPIFromId(id: number): Promise<PointInteret> {
     return fetch(`${rootEndpoint}/${id}`)
       .then((response) => response.json())
       .catch(console.error)
@@ -36,7 +36,7 @@ class EleveApi {
 
   public createPI(pi: pointInteret): PointInteret {
     return new PointInteret(
-      pi.id,
+      pi._id,
       pi.name,
       pi.latitude,
       pi.longitude,

@@ -40,14 +40,10 @@ exports.getOneCity = (req, res, next) => {
 exports.modifyCity = (req, res, next) => {
   const city = new City({
     _id: req.params.id,
-<<<<<<< HEAD
     name: req.body.name,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
     polygon: req.body.polygon
-=======
-    nom: req.body.nom
->>>>>>> 0bd289abe59e0d1c46fd417e5930a1cd298ee9d4
   });
   city
     .updateOne({ _id: req.params.id }, city)

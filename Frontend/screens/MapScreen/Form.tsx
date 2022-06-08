@@ -8,44 +8,14 @@ import {
   TextInput
 } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import City from '../../services/city.model';
+import CityApi from '../../services/city.api_service';
 
 const explorateur = require('../../assets/explorer.png');
 const resident = require('../../assets/resident.png');
-const cities = [
-  {
-    id: 1,
-    name: 'Bordeaux',
-    latitude: 44.837789,
-    longitude: -0.57918
-  },
-  {
-    id: 2,
-    name: 'Marseille',
-    latitude: 43.2961743,
-    longitude: 5.3699525
-  },
-  {
-    id: 3,
-    name: 'Paris',
-    latitude: 48.856614,
-    longitude: 2.3522219
-  },
-  {
-    id: 4,
-    name: 'Lyon',
-    latitude: 45.7578137,
-    longitude: 4.8320114
-  },
-  {
-    id: 5,
-    name: 'Lilles',
-    latitude: 59.9566415,
-    longitude: 11.0476837
-  }
-];
 
 interface FormProps {
-  cityPicked: { name: string; latitude: number; longitude: number };
+  cityPicked: City;
   userType: string;
   selectCity: Function;
   setUserType: Function;
@@ -53,20 +23,10 @@ interface FormProps {
 }
 
 interface FormState {
-  selectedCity: string;
+  selectedCity: String;
   selectedUserType: string;
-  constantCities: Array<{
-    id: number;
-    name: string;
-    latitude: number;
-    longitude: number;
-  }>;
-  cities: Array<{
-    id: number;
-    name: string;
-    latitude: number;
-    longitude: number;
-  }>;
+  constantCities: Array<City>;
+  cities: Array<City>;
   searchFiled: string;
 }
 
@@ -89,7 +49,7 @@ export default class Form extends Component<FormProps, FormState> {
     this.setState({ cities: citiesFiltered });
   }
 
-  selectCity(city: any) {
+  selectCity(city: City) {
     this.setState({ selectedCity: city.name });
     this.props.selectCity(city);
   }
@@ -99,15 +59,21 @@ export default class Form extends Component<FormProps, FormState> {
     this.props.setUserType(user);
   }
 
+  loadCities = () => {
+    CityApi.getAllCities().then((cities) => {
+      this.setState({ cities });
+      this.setState({ constantCities: cities });
+    });
+  };
+
   componentDidMount() {
-    this.setState({ cities: cities });
-    this.setState({ constantCities: cities });
+    this.loadCities();
   }
   render() {
     const { userType, cityPicked, setUserType, setFormDone } = this.props;
     const { cities, selectedUserType, selectedCity } = this.state;
-
-    return explorateur && resident ? (
+    console.log(cities);
+    return explorateur && resident && cities ? (
       <View style={styles.containerModal}>
         <View style={styles.containerCities}>
           <Text style={styles.textTitle}>
@@ -142,7 +108,7 @@ export default class Form extends Component<FormProps, FormState> {
                     style={
                       stylesProps(city.name === selectedCity ? 1 : 0.6).textCity
                     }
-                    key={city.id}
+                    key={city._id}
                     onPress={() => this.selectCity(city)}
                   >
                     {city.name}

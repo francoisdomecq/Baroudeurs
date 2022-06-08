@@ -2,7 +2,7 @@ import { Image, ImageProps } from 'react-native';
 
 export default class Marker {
   constructor(
-    public id: number,
+    public _id: string,
     public name: string,
     public latitude: number,
     public longitude: number,

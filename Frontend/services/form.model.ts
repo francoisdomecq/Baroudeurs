@@ -1,6 +1,5 @@
+import City from './city.model';
+
 export default class Form {
-  constructor(
-    public cityPicked: { name: string; latitude: number; longitude: number },
-    public userType: string,
-  ) {}
+  constructor(public cityPicked: City, public userType: string) {}
 }

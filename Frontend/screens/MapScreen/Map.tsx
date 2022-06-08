@@ -14,22 +14,21 @@ import { Ionicons } from '@expo/vector-icons';
 import CustomMarker from '../../components/CustomMarker';
 import ModalMap from '../../components/ModalMap';
 
-import { polygon } from '../../Data/Bdx';
-import { MARKERS_DATA } from '../../Data/Markers_Data';
-
 import MarkerApi from '../../services/point_interet.api_service';
 import MarkerModel from '../../services/point_interet.model';
+import City from '../../services/city.model';
 
 interface MapProps extends NavigationProps {
   latitude: number;
   longitude: number;
-  cityPicked: { name: string; latitude: number; longitude: number };
+  cityPicked: City;
   userType: string;
   setLocation: Function;
 }
 
 interface MapState {
   markers: Array<MarkerModel>;
+  constantMarkers: Array<MarkerModel>;
   themeChoisi: Array<string>;
   displayModal: boolean;
 }
@@ -38,6 +37,7 @@ export default class Map extends Component<MapProps, MapState> {
     super(props);
     this.state = {
       markers: [],
+      constantMarkers: [],
       themeChoisi: [],
       displayModal: false
     };
@@ -52,7 +52,7 @@ export default class Map extends Component<MapProps, MapState> {
       const newThemesArray = [...this.state.themeChoisi];
       newThemesArray.splice(newThemesArray.indexOf(theme));
       if (newThemesArray.length === 0) {
-        this.setState({ markers: MARKERS_DATA });
+        this.setState({ markers: this.state.constantMarkers });
         this.setState({ themeChoisi: newThemesArray });
       } else {
         this.setState({ themeChoisi: newThemesArray });
@@ -63,31 +63,29 @@ export default class Map extends Component<MapProps, MapState> {
         const newTheme = [...this.state.themeChoisi, theme];
         this.setState({ themeChoisi: newTheme });
         this.filter();
-        // this.setState({ displayModal: false });
       } else {
         this.setState({ themeChoisi: [] });
-        this.setState({ markers: MARKERS_DATA });
+        this.setState({ markers: this.state.constantMarkers });
         this.setState({ displayModal: false });
       }
     }
   };
 
   filter() {
-    const filteredMarkers = MARKERS_DATA.filter((marker) => {
+    const filteredMarkers = this.state.constantMarkers.filter((marker) => {
       if (this.state.themeChoisi.includes(marker.theme)) return marker;
     });
     this.setState({ markers: filteredMarkers });
   }
 
   loadMarkers = () => {
-    MarkerApi.getPI().then((marker) => {
-      console.log(marker);
-      this.setState({ markers: marker });
+    MarkerApi.getPI().then((markers) => {
+      this.setState({ markers: markers });
+      this.setState({ constantMarkers: markers });
     });
   };
 
   componentDidMount() {
-    // this.setState({ markers: MARKERS_DATA });
     this.loadMarkers();
   }
 
@@ -95,7 +93,6 @@ export default class Map extends Component<MapProps, MapState> {
     const { markers, displayModal, themeChoisi } = this.state;
     const { latitude, longitude, userType, cityPicked, setLocation } =
       this.props;
-    // console.log(themeChoisi);
     return markers ? (
       <View
         style={styles.container}
@@ -149,12 +146,12 @@ export default class Map extends Component<MapProps, MapState> {
               longitude: longitude
             }}
           /> */}
-          <Polyline coordinates={polygon} strokeWidth={2} />
+          <Polyline coordinates={cityPicked.polygon} strokeWidth={2} />
 
           {markers.map((marker) => {
             return (
               <CustomMarker
-                key={marker.id}
+                key={marker._id}
                 marker={marker}
                 navigation={this.props.navigation}
               />
