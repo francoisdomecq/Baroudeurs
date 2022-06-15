@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
 import { PISchema } from './PointInteret';
+
+const mongoose = require('mongoose');
+
 const polygonSchema = mongoose.Schema(
   {
     longitude: { type: Number, required: true },

@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
 import { RouteProp } from '@react-navigation/core';
+
+import MarkerApi from '../services/point_interet.api_service';
 import Marker from '../services/point_interet.model';
-import { MARKERS_DATA } from '../Data/Markers_Data';
+
 interface DetailsProps extends NavigationProps {
   route: RouteProp<RootStackParamList, 'Details'>;
 }
@@ -30,8 +32,9 @@ export default class Details extends Component<DetailsProps, DetailsState> {
   componentDidMount() {
     const markerId = this.props.route.params.markerId;
     setTimeout(() => {
-      const marker = MARKERS_DATA.find((marker) => marker.id === markerId);
-      if (marker) this.setState({ marker: marker });
+      MarkerApi.getPIFromId(markerId).then((marker) =>
+        this.setState({ marker })
+      );
     }, 200);
   }
 

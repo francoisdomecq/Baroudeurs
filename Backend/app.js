@@ -6,6 +6,11 @@ const { setMaxListeners } = require('./models/City');
 const CityRoutes = require('./routes/City');
 const PIRoutes = require('./routes/PointInteret');
 const QuartierRoutes = require('./routes/Quartier');
+const QueteRoutes = require('./routes/Quete');
+const UserRoutes = require('./routes/User');
+const SuccesRoutes = require('./routes/Succes');
+const JournalRoutes = require('./routes/Journal');
+
 const app = express();
 
 //Middleware pour gérer le système de sécurité CORS qui bloque les appels HTTP entre des serveurs différents.
@@ -33,5 +38,9 @@ app.use(express.json());
 app.use('/api/city', CityRoutes);
 app.use('/api/pointinteret', PIRoutes);
 app.use('/api/quartiers', QuartierRoutes);
+app.use('/api/quetes', QueteRoutes);
+app.use('/api/user', UserRoutes);
+app.use('/api/succes', SuccesRoutes);
+app.use('/api/journal', JournalRoutes);
 
 module.exports = app;
