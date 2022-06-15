@@ -26,7 +26,7 @@ export interface NavigationProps {
 
 const stackScreenOptions: StackNavigationOptions = {
   headerStyle: {
-    backgroundColor: '#4FB286'
+    backgroundColor: '#46B82F'
   },
   headerTintColor: '#fff',
   headerTitleStyle: {
@@ -35,11 +35,15 @@ const stackScreenOptions: StackNavigationOptions = {
   headerTitleAlign: 'center'
 };
 
+const stackScreenOptionsBis: StackNavigationOptions = {
+  headerShown: false
+};
+
 //Stack du fil d'actualité. Depuis le fil d'actualité on peut naviguer vers l'écran Publication
 const MapStack = createStackNavigator<RootStackParamList>();
 export const MapStackScreen = () => {
   return (
-    <MapStack.Navigator screenOptions={stackScreenOptions}>
+    <MapStack.Navigator screenOptions={{ headerShown: false }}>
       <MapStack.Screen
         name="Map"
         // options={{ title: "Fil d'actualité" }}

@@ -6,7 +6,7 @@ import {
   Appearance,
   ActivityIndicator
 } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
@@ -140,12 +140,12 @@ export default class Map extends Component<MapProps, MapState> {
           // zoomEnabled={false}
           // pitchEnabled={false}
         >
-          {/* <Marker
+          <Marker
             coordinate={{
               latitude: latitude,
               longitude: longitude
             }}
-          /> */}
+          />
           <Polyline coordinates={cityPicked.polygon} strokeWidth={2} />
 
           {markers.map((marker) => {
@@ -164,7 +164,7 @@ export default class Map extends Component<MapProps, MapState> {
             style={styles.button}
             onPress={() => this.setModalVisible(true)}
           >
-            <Ionicons name="menu" size={24} color="black" />
+            <Ionicons name="ios-settings-sharp" size={30} color="#808080" />
           </TouchableOpacity>
         </View>
         <ModalMap
@@ -196,13 +196,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     paddingLeft: '1%',
     paddingRight: '1%',
-    top: '2%',
-    left: '1%'
+    top: '6%',
+    left: '6%'
   },
   button: {
     backgroundColor: '#fff',
-    width: 24,
-    height: 24,
+    width: 40,
+    height: 40,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center'

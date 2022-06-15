@@ -21,8 +21,8 @@ export default class ThemeButton extends Component<
         style={
           styles(
             themeChoisi.includes(theme.name)
-              ? 'rgba(33, 150, 243, 1)'
-              : 'rgba(33, 150, 243, 0.6)'
+              ? 'rgba(70, 184, 47, 1)'
+              : 'rgba(70, 184, 47, 0.6)'
           ).itemsTheme
         }
         //Ici l'event lorsque l'utilisateur clique sur un thème et que l'on appelle la fonction _choixTheme qui actualise le state de themeChoisi

@@ -7,7 +7,9 @@ import {
   Pressable,
   View
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import ThemeButton from './ThemeButton';
+import Redirect from './Redirect';
 
 interface ModalMapProps {
   setModalVisible: Function;
@@ -39,7 +41,18 @@ export default class ModalMap extends Component<ModalMapProps> {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
+              <View style={styles.modalHeader}>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Ionicons name="close-sharp" size={28} color="#828282" />
+                </Pressable>
+                <Text style={styles.headerTitle}>
+                  Paramètres de l'application
+                </Text>
+              </View>
+              <Text style={styles.modalText}>Choisir un thème</Text>
               <View style={styles.containerScrollView}>
                 <ScrollView
                   horizontal
@@ -59,13 +72,60 @@ export default class ModalMap extends Component<ModalMapProps> {
                   }
                 </ScrollView>
               </View>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
+              <View style={{ width: '100%' }}>
+                <Redirect
+                  firstIcon={
+                    <Ionicons name="earth" size={24} color="#46B82F" />
+                  }
+                  category="Ville"
+                  description="Bordeaux"
+                  secondIcon={
+                    <Ionicons
+                      name="chevron-forward"
+                      size={24}
+                      color="#cbcbcb"
+                    />
+                  }
+                />
+              </View>
+              <View style={{ width: '100%' }}>
+                <Redirect
+                  firstIcon={
+                    <Ionicons name="person" size={24} color="#46B82F" />
+                  }
+                  category="Compte"
+                  description="Modifer le profil"
+                  secondIcon={
+                    <Ionicons
+                      name="chevron-forward"
+                      size={24}
+                      color="#cbcbcb"
+                    />
+                  }
+                />
+              </View>
+              <View style={{ width: '100%' }}>
+                <Redirect
+                  firstIcon={
+                    <Ionicons name="newspaper" size={24} color="#46B82F" />
+                  }
+                  category="Journal"
+                  description="Modifer le journal"
+                  secondIcon={
+                    <Ionicons
+                      name="chevron-forward"
+                      size={24}
+                      color="#cbcbcb"
+                    />
+                  }
+                />
+              </View>
+              <View>
+                <Text>
+                  Succes dans bordeaux{' '}
+                  {/*afficher liste succes  bdx scrollview et griser ceux pas obtenus*/}
+                </Text>
+              </View>
             </View>
           </View>
         </Modal>
@@ -81,12 +141,12 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   modalView: {
-    height: '70%',
-    width: '85%',
+    height: '100%',
+    width: '100%',
     margin: '2%',
-    backgroundColor: 'white',
+    backgroundColor: '#e7e7e7',
     borderRadius: 15,
-    padding: '2%',
+    paddingTop: '10%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -97,16 +157,30 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
+  modalHeader: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '10%'
+  },
+  headerTitle: {
+    fontSize: 18,
+    marginTop: '1%'
+  },
   button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2
+    borderRadius: 50,
+    padding: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: '6%',
+    left: '6%'
   },
   buttonOpen: {
     backgroundColor: '#F194FF'
   },
   buttonClose: {
-    backgroundColor: '#2196F3'
+    backgroundColor: '#fff'
   },
   textStyle: {
     color: 'white',
