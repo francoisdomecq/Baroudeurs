@@ -24,7 +24,7 @@ class CustomMarker extends Component<CustomMarkerProps> {
 
             <Marker
               //On attribue une key à chaque marqueur
-              key={marker.id}
+              key={marker._id}
               //On modifie les marqueurs avec les images que nous leurs avons donné
 
               //On définit ici les coordonnées où le marqueur doit être affiché
@@ -46,7 +46,9 @@ class CustomMarker extends Component<CustomMarkerProps> {
                 }
                 <CalloutSubview
                   onPress={() => {
-                    navigation.navigate('Details', { markerId: marker.id });
+                    navigation.navigate('Details', {
+                      markerId: marker._id
+                    });
                   }}
                 >
                   <FicheDescriptive

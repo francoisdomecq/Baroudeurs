@@ -17,7 +17,7 @@ export type RootStackParamList = {
   Map: undefined;
   User: undefined;
   Quete: undefined;
-  Details: { markerId: number };
+  Details: { markerId: string };
 };
 
 export interface NavigationProps {

@@ -9,7 +9,6 @@ import City from '../../services/city.model';
 import Form from './Form';
 import Map from './Map';
 
-
 interface MapProps extends NavigationProps {}
 
 interface MapState {
@@ -67,8 +66,9 @@ export default class MapScreen extends Component<MapProps, MapState> {
   componentDidMount() {
     // AsyncStorage.clear();
     this.isFormDone();
-    const colorScheme = Appearance.getColorScheme();
-    if (colorScheme) this.setState({ colorScheme });
+
+    // const colorScheme = Appearance.getColorScheme();
+    // if (colorScheme) this.setState({ colorScheme });
   }
 
   render() {
@@ -86,9 +86,12 @@ export default class MapScreen extends Component<MapProps, MapState> {
       <Form
         userType={userType}
         cityPicked={cityPicked}
+        latitude={latitude}
+        longitude={longitude}
         setUserType={this.setUserType}
         selectCity={this.selectCity}
         setFormDone={this.setFormDone}
+        setLocation={this.setLocation}
       />
     );
   }

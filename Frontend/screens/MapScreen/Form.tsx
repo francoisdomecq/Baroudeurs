@@ -8,6 +8,9 @@ import {
   TextInput
 } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import { getDistance } from 'geolib';
+import * as Location from 'expo-location';
+
 import City from '../../services/city.model';
 import CityApi from '../../services/city.api_service';
 
@@ -15,11 +18,14 @@ const explorateur = require('../../assets/explorer.png');
 const resident = require('../../assets/resident.png');
 
 interface FormProps {
+  latitude: number;
+  longitude: number;
   cityPicked: City;
   userType: string;
   selectCity: Function;
   setUserType: Function;
   setFormDone: Function;
+  setLocation: Function;
 }
 
 interface FormState {
@@ -27,7 +33,9 @@ interface FormState {
   selectedUserType: string;
   constantCities: Array<City>;
   cities: Array<City>;
+  distance: Array<number>;
   searchFiled: string;
+  hasUpdated: boolean;
 }
 
 export default class Form extends Component<FormProps, FormState> {
@@ -38,7 +46,9 @@ export default class Form extends Component<FormProps, FormState> {
       selectedUserType: '',
       searchFiled: '',
       constantCities: [],
-      cities: []
+      cities: [],
+      distance: [],
+      hasUpdated: false
     };
   }
 
@@ -66,14 +76,98 @@ export default class Form extends Component<FormProps, FormState> {
     });
   };
 
+  getLocation = () => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location);
+      if (location) {
+        this.props.setLocation(
+          location.coords.latitude,
+          location.coords.longitude
+        );
+      } else {
+        alert('Pas récupérée');
+      }
+    })();
+  };
+
   componentDidMount() {
     this.loadCities();
+    this.getLocation();
   }
+
+  componentDidUpdate() {
+    if (
+      this.state.cities.length > 0 &&
+      this.props.latitude !== 0 &&
+      this.props.longitude !== 0 &&
+      this.state.hasUpdated === false
+    ) {
+      // this.state.cities.map((city) => {
+      //   let distance = getDistance(
+      //     { latitude: this.props.latitude, longitude: this.props.longitude },
+      //     {
+      //       latitude: city.latitude,
+      //       longitude: city.longitude
+      //     }
+      //   );
+      //   this.setState({ distance: [...this.state.distance, distance] });
+      // });
+
+      this.state.cities.sort((a, b) => {
+        let distanceA = getDistance(
+          { latitude: this.props.latitude, longitude: this.props.longitude },
+          {
+            latitude: a.latitude,
+            longitude: a.longitude
+          }
+        );
+        let distanceB = getDistance(
+          { latitude: this.props.latitude, longitude: this.props.longitude },
+          {
+            latitude: b.latitude,
+            longitude: b.longitude
+          }
+        );
+        return distanceA - distanceB;
+      });
+
+      this.state.constantCities.sort((a, b) => {
+        let distanceA = getDistance(
+          { latitude: this.props.latitude, longitude: this.props.longitude },
+          {
+            latitude: a.latitude,
+            longitude: a.longitude
+          }
+        );
+        let distanceB = getDistance(
+          { latitude: this.props.latitude, longitude: this.props.longitude },
+          {
+            latitude: b.latitude,
+            longitude: b.longitude
+          }
+        );
+        return distanceA - distanceB;
+      });
+    }
+  }
+
   render() {
-    const { userType, cityPicked, setUserType, setFormDone } = this.props;
+    const {
+      userType,
+      cityPicked,
+      setUserType,
+      setFormDone,
+      latitude,
+      longitude
+    } = this.props;
+
     const { cities, selectedUserType, selectedCity } = this.state;
-    console.log(cities);
-    return explorateur && resident && cities ? (
+    return explorateur && resident && cities && latitude && longitude ? (
       <View style={styles.containerModal}>
         <View style={styles.containerCities}>
           <Text style={styles.textTitle}>
@@ -171,8 +265,8 @@ export default class Form extends Component<FormProps, FormState> {
         ) : null}
       </View>
     ) : (
-      <View>
-        <ActivityIndicator />
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <ActivityIndicator size="large" color="#46B82F" />
       </View>
     );
   }
