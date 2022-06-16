@@ -1,7 +1,9 @@
-import City from './City';
-import { QueteSchema } from './Quete';
-import { SuccesSchema } from './Succes';
 const mongoose = require('mongoose');
+Schema = mongoose.Schema;
+
+const City = require('./City');
+const QueteSchema = require('./Quete');
+const Succes = require('./Succes');
 
 const localisationSchema = mongoose.Schema(
   {
@@ -11,16 +13,16 @@ const localisationSchema = mongoose.Schema(
   { _id: false }
 );
 
-export const UserSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
   typeVisiteur: { type: String, required: true },
   localisation: { type: localisationSchema, required: true },
-  cityPicked: { type: City, required: true },
+  cityPicked: { type: Schema.Types.ObjectId, ref: City, required: true },
   score: { type: Number, required: true },
-  queteEnCours: [QueteSchema],
-  queteTerminees: [QueteSchema],
-  listeSucces: [SuccesSchema]
+  queteEnCours: [{ type: Schema.Types.ObjectId, ref: QueteSchema }],
+  queteTerminees: [{ type: Schema.Types.ObjectId, ref: QueteSchema }],
+  listeSucces: [{ type: Schema.Types.ObjectId, ref: Succes }]
 });
 
-module.exports = mongoose.model('Succes', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

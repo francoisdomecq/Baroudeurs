@@ -1,6 +1,7 @@
-import { PISchema } from './PointInteret';
-
 const mongoose = require('mongoose');
+Schema = mongoose.Schema;
+
+const PISchema = require('./PointInteret');
 
 const polygonSchema = mongoose.Schema(
   {
@@ -13,7 +14,7 @@ const polygonSchema = mongoose.Schema(
 const QuartierSchema = mongoose.Schema({
   name: { type: String, required: true },
   polygon: [polygonSchema],
-  listePI: [PISchema]
+  listePI: [{ type: Schema.Types.ObjectId, ref: PISchema, required: true }]
 });
 
 module.exports = mongoose.model('Quartier', QuartierSchema);

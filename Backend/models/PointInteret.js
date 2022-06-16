@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-export const PISchema = mongoose.Schema({
+const PISchema = mongoose.Schema({
   name: { type: String, required: true },
   latitude: { type: Number, required: true },
   longitude: { type: Number, required: true },
