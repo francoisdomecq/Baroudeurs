@@ -27,7 +27,7 @@ class EleveApi {
   }
 
   //récupère un élève en fonction de l'id
-  public getPIFromId(id: number): Promise<PointInteret> {
+  public getPIFromId(id: string): Promise<PointInteret> {
     return fetch(`${rootEndpoint}/${id}`)
       .then((response) => response.json())
       .catch(console.error)

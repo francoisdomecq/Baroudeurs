@@ -10,6 +10,7 @@ import {
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import { getDistance } from 'geolib';
 import * as Location from 'expo-location';
+import { FontAwesome } from '@expo/vector-icons';
 
 import City from '../../services/city.model';
 import CityApi from '../../services/city.api_service';
@@ -83,7 +84,6 @@ export default class Form extends Component<FormProps, FormState> {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      console.log(location);
       if (location) {
         this.props.setLocation(
           location.coords.latitude,
@@ -135,24 +135,7 @@ export default class Form extends Component<FormProps, FormState> {
         );
         return distanceA - distanceB;
       });
-
-      this.state.constantCities.sort((a, b) => {
-        let distanceA = getDistance(
-          { latitude: this.props.latitude, longitude: this.props.longitude },
-          {
-            latitude: a.latitude,
-            longitude: a.longitude
-          }
-        );
-        let distanceB = getDistance(
-          { latitude: this.props.latitude, longitude: this.props.longitude },
-          {
-            latitude: b.latitude,
-            longitude: b.longitude
-          }
-        );
-        return distanceA - distanceB;
-      });
+      // this.setState({ constantCities: this.state.cities });
     }
   }
 
@@ -170,51 +153,73 @@ export default class Form extends Component<FormProps, FormState> {
     return explorateur && resident && cities && latitude && longitude ? (
       <View style={styles.containerModal}>
         <View style={styles.containerCities}>
-          <Text style={styles.textTitle}>
-            Sélectionnez la ville que vous souhaitez explorer
-          </Text>
-          <View
-            style={{
-              height: 20,
-              backgroundColor: '#4FB286',
-              width: '80%',
-              borderRadius: 10
-            }}
-          >
+          <Text style={styles.textTitle}>Choisir une ville</Text>
+          <View style={styles.searchBar}>
+            <FontAwesome name="search" size={24} color="#f0efef" />
             <TextInput
-              style={{
-                textAlign: 'center'
-              }}
+              style={styles.searchInput}
               onChange={(e) => this.searchCities(e.nativeEvent.text)}
+              placeholder="Recherchez"
+              placeholderTextColor={'#f0efef'}
             />
           </View>
-          <ScrollView
-            style={styles.containerScrollview}
-            contentContainerStyle={{
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {cities.length > 0 ? (
-              cities.map((city) => {
-                return (
-                  <Text
-                    style={
-                      stylesProps(city.name === selectedCity ? 1 : 0.6).textCity
-                    }
-                    key={city._id}
-                    onPress={() => this.selectCity(city)}
-                  >
-                    {city.name}
-                  </Text>
-                );
-              })
-            ) : (
-              <Text style={stylesProps(1).textCity}>
-                Aucune vile ne correspond
-              </Text>
-            )}
-          </ScrollView>
+          <View style={styles.containerScrollView}>
+            <ScrollView style={styles.scrollview} contentContainerStyle={{}}>
+              {cities.length > 0 ? (
+                cities.map((city) => {
+                  return (
+                    <TouchableOpacity
+                      style={styles.cityView}
+                      key={city._id}
+                      onPress={() => this.selectCity(city)}
+                    >
+                      <Text
+                        style={
+                          stylesProps(
+                            city.name === selectedCity ||
+                              (cities.indexOf(city) === 0 &&
+                                selectedCity === '')
+                              ? 1
+                              : 0.6
+                          ).textCity
+                        }
+                      >
+                        {city.name}
+                      </Text>
+                      <Text
+                        style={
+                          stylesProps(
+                            city.name === selectedCity ||
+                              (cities.indexOf(city) === 0 &&
+                                selectedCity === '')
+                              ? 1
+                              : 0.6
+                          ).textCity
+                        }
+                      >
+                        {cities.indexOf(city) === 0
+                          ? 'Vous êtes ici'
+                          : getDistance(
+                              { latitude: latitude, longitude: longitude },
+                              {
+                                latitude: city.latitude,
+                                longitude: city.longitude
+                              },
+                              100
+                            ) /
+                              1000 +
+                            ' km'}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
+              ) : (
+                <Text style={stylesProps(1).textCity}>
+                  Aucune vile ne correspond
+                </Text>
+              )}
+            </ScrollView>
+          </View>
         </View>
         {cityPicked ? (
           <View style={styles.containerBaroudeur}>
@@ -231,7 +236,6 @@ export default class Form extends Component<FormProps, FormState> {
                     stylesProps(selectedUserType === 'Explorateur' ? 0.6 : 1)
                       .image
                   }
-                  // source={require('../../assets/explorer.png')}
                   source={explorateur}
                 />
                 <Text style={styles.textUnderImage}>Explorateur</Text>
@@ -277,7 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     backgroundColor: '#fff',
-    paddingTop: '5%',
+    paddingTop: '15%',
     paddingBottom: '5%'
   },
   containerCities: {
@@ -287,17 +291,62 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   textTitle: {
-    fontSize: 16,
-    fontWeight: '500'
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: '3%'
   },
-  containerScrollview: {
+  searchBar: {
+    height: 40,
     width: '80%',
-    maxHeight: 180,
-    backgroundColor: '#4FB286',
-    borderRadius: 10,
-    marginTop: '3%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: '4%',
+    paddingRight: '2%',
+    backgroundColor: '#46B82F',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderColor: '#fff',
+    borderBottomColor: '#fff',
+    borderBottomWidth: 3,
     shadowColor: '#000',
-    paddingBottom: '2%'
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 3
+  },
+  searchInput: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: '5%',
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#fff'
+  },
+  containerScrollView: {
+    width: '80%',
+    backgroundColor: '#46B82F',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 3
+  },
+  scrollview: {
+    width: '100%',
+    maxHeight: 180,
+    // marginTop: '3%',
+    paddingBottom: '2%',
+    paddingLeft: '4%',
+    paddingRight: '4%'
+  },
+  cityView: {
+    width: '100%',
+    height: 35,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1
   },
   textCity: {
     fontSize: 18,
@@ -305,6 +354,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: '4%'
   },
+
   containerBaroudeur: {
     flex: 1,
     alignItems: 'center',
@@ -331,10 +381,14 @@ const styles = StyleSheet.create({
   },
   buttonValider: {
     width: '80%',
-    padding: '1%',
+    padding: '2%',
     borderRadius: 10,
     alignSelf: 'center',
-    backgroundColor: '#3C896D'
+    backgroundColor: '#46B82F',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 3
   },
   textButton: {
     fontWeight: '700',
@@ -353,6 +407,7 @@ const stylesProps = (opacity: number) =>
       marginTop: '2%',
       opacity: opacity
     },
+
     image: {
       width: 180,
       height: 180,

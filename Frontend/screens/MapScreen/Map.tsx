@@ -7,7 +7,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { Polyline, Marker } from 'react-native-maps';
+import MapView, { Polyline, Marker, Polygon } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,11 +17,14 @@ import ModalMap from '../../components/ModalMap';
 import MarkerApi from '../../services/point_interet.api_service';
 import MarkerModel from '../../services/point_interet.model';
 import City from '../../services/city.model';
+import QuartierModel from '../../services/quartier.model';
+import Quartier from '../../components/Quartier';
 
 interface MapProps extends NavigationProps {
   latitude: number;
   longitude: number;
   cityPicked: City;
+  quartiers: Array<QuartierModel>;
   userType: string;
   setLocation: Function;
 }
@@ -91,8 +94,15 @@ export default class Map extends Component<MapProps, MapState> {
 
   render() {
     const { markers, displayModal, themeChoisi } = this.state;
-    const { latitude, longitude, userType, cityPicked, setLocation } =
-      this.props;
+    const {
+      latitude,
+      longitude,
+      userType,
+      quartiers,
+      cityPicked,
+      setLocation
+    } = this.props;
+
     return markers ? (
       <View
         style={styles.container}
@@ -121,16 +131,16 @@ export default class Map extends Component<MapProps, MapState> {
             const longitude = user.nativeEvent.coordinate.longitude;
             setLocation(latitude, longitude);
           }}
-          // camera={{
-          //   center: {
-          //     longitude: this.state.longitude,
-          //     latitude: this.state.latitude
-          //   },
-          //   pitch: 70,
-          //   heading: 0,
-          //   zoom: 15,
-          //   altitude: 0
-          // }}
+          camera={{
+            center: {
+              longitude: longitude,
+              latitude: latitude
+            },
+            pitch: 70,
+            heading: 0,
+            zoom: 15,
+            altitude: 0
+          }}
           // Only on iOS MapKit, in meters. The property is ignored by Google Maps.
 
           style={styles.map}
@@ -146,6 +156,15 @@ export default class Map extends Component<MapProps, MapState> {
               longitude: longitude
             }}
           />
+          {quartiers.map((quartier) => {
+            return (
+              <Quartier
+                position={{ latitude, longitude }}
+                quartier={quartier}
+              />
+            );
+          })}
+
           <Polyline coordinates={cityPicked.polygon} strokeWidth={2} />
 
           {markers.map((marker) => {

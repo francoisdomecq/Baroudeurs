@@ -72,7 +72,8 @@ export default class ModalMap extends Component<ModalMapProps> {
                   }
                 </ScrollView>
               </View>
-              <View style={{ width: '100%' }}>
+              <Text style={styles.modalText}>Paramètres</Text>
+              <View style={styles.redirect}>
                 <Redirect
                   firstIcon={
                     <Ionicons name="earth" size={24} color="#46B82F" />
@@ -88,7 +89,7 @@ export default class ModalMap extends Component<ModalMapProps> {
                   }
                 />
               </View>
-              <View style={{ width: '100%' }}>
+              <View style={styles.redirect}>
                 <Redirect
                   firstIcon={
                     <Ionicons name="person" size={24} color="#46B82F" />
@@ -104,7 +105,7 @@ export default class ModalMap extends Component<ModalMapProps> {
                   }
                 />
               </View>
-              <View style={{ width: '100%' }}>
+              <View style={styles.redirect}>
                 <Redirect
                   firstIcon={
                     <Ionicons name="newspaper" size={24} color="#46B82F" />
@@ -164,8 +165,10 @@ const styles = StyleSheet.create({
     marginBottom: '10%'
   },
   headerTitle: {
-    fontSize: 18,
-    marginTop: '1%'
+    fontSize: 19,
+    fontWeight: '600',
+    marginTop: '1%',
+    color: '#46B82F'
   },
   button: {
     borderRadius: 50,
@@ -188,14 +191,25 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   modalText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: '1%',
+    color: '#46B82F',
     marginBottom: 15,
     textAlign: 'center'
   },
   containerScrollView: {
-    width: '100%'
+    width: '100%',
+    marginBottom: '6%',
+    paddingLeft: '1%',
+    paddingRight: '1%'
   },
   scrollview: {
     paddingLeft: '1%',
     paddingRight: '1%'
+  },
+  redirect: {
+    width: '100%',
+    marginBottom: '2%'
   }
 });

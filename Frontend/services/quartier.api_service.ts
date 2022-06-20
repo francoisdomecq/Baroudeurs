@@ -1,7 +1,7 @@
 import Quartier from './quartier.model';
 import PointInteret from './point_interet.model';
 
-const rootEndpoint = 'https://baroudeurs.herokuapp.com/api/Quartier';
+const rootEndpoint = 'https://baroudeurs.herokuapp.com/api/quartiers';
 
 interface quartier {
   _id: string;
@@ -20,7 +20,7 @@ class EleveApi {
   }
 
   //récupère un élève en fonction de l'id
-  public getQuartierFromId(id: number): Promise<Quartier> {
+  public getQuartierFromId(id: string): Promise<Quartier> {
     return fetch(`${rootEndpoint}/${id}`)
       .then((response) => response.json())
       .catch(console.error)

@@ -1,4 +1,5 @@
 import City from './city.model';
+import Quartier from './quartier.model';
 
 const rootEndpoint = 'https://baroudeurs.herokuapp.com/api/city';
 
@@ -8,6 +9,7 @@ interface city {
   latitude: number;
   longitude: number;
   polygon: Array<{ longitude: number; latitude: number }>;
+  quartiers: Array<string>;
 }
 
 class EleveApi {
@@ -33,7 +35,8 @@ class EleveApi {
       city.name,
       city.latitude,
       city.longitude,
-      city.polygon
+      city.polygon,
+      city.quartiers
     );
   }
 }
