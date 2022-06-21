@@ -17,7 +17,6 @@ class Quartier extends React.Component<QuartierProps, QuartierState> {
   render() {
     const { quartier, position } = this.props;
     const isInPolygon = isPointInPolygon(position, quartier.polygon);
-    console.log(isInPolygon);
     return (
       <View>
         <Polygon

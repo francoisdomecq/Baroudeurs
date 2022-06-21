@@ -64,6 +64,7 @@ export default class ModalMap extends Component<ModalMapProps> {
                     //On récupère ici les différents thèmes que nous avons défini dans Themes.js
                     THEMES.map((theme) => (
                       <ThemeButton
+                        key={theme.id}
                         theme={theme}
                         selectTheme={selectTheme}
                         themeChoisi={themeChoisi}

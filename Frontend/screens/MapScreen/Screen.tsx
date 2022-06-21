@@ -40,6 +40,7 @@ export default class MapScreen extends Component<MapProps, MapState> {
     this.setState({
       cityPicked: city
     });
+    this.setLocation(city.latitude, city.longitude);
   };
 
   setUserType = (userType: string) => {
@@ -61,6 +62,13 @@ export default class MapScreen extends Component<MapProps, MapState> {
     if (Form !== undefined) {
       this.selectCity(Form.cityPicked);
       this.setState({ userType: Form.userType });
+      Form.cityPicked.quartiers.map((quartierId) => {
+        QuartierApi.getQuartierFromId(quartierId).then((quartierObject) => {
+          this.setState({
+            quartiers: [...this.state.quartiers, quartierObject]
+          });
+        });
+      });
       this.setState({ formDone: true });
     } else this.setState({ formDone: false });
   }
@@ -73,9 +81,6 @@ export default class MapScreen extends Component<MapProps, MapState> {
   componentDidMount() {
     AsyncStorage.clear();
     this.isFormDone();
-
-    // const colorScheme = Appearance.getColorScheme();
-    // if (colorScheme) this.setState({ colorScheme });
   }
 
   render() {

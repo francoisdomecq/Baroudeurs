@@ -17,8 +17,8 @@ interface pointInteret {
   histoire: string;
 }
 
-class EleveApi {
-  //Récupère la liste de tous les élèves
+class MarkerApi {
+  //Récupère la liste de tous les pi
   public getPI(): Promise<Array<PointInteret>> {
     return fetch(rootEndpoint)
       .then((response) => response.json() || [])
@@ -26,7 +26,7 @@ class EleveApi {
       .then((comArray) => comArray.map(this.createPI));
   }
 
-  //récupère un élève en fonction de l'id
+  //récupère un point intérêt en fonction de l'id
   public getPIFromId(id: string): Promise<PointInteret> {
     return fetch(`${rootEndpoint}/${id}`)
       .then((response) => response.json())
@@ -52,4 +52,4 @@ class EleveApi {
   }
 }
 
-export default new EleveApi();
+export default new MarkerApi();

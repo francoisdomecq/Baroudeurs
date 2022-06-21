@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Appearance,
-  ActivityIndicator
-} from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { Polyline, Marker, Polygon } from 'react-native-maps';
+import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -81,16 +75,26 @@ export default class Map extends Component<MapProps, MapState> {
     this.setState({ markers: filteredMarkers });
   }
 
-  loadMarkers = () => {
-    MarkerApi.getPI().then((markers) => {
-      this.setState({ markers: markers });
-      this.setState({ constantMarkers: markers });
+  loadMarkers() {
+    this.props.quartiers.forEach((quartier) => {
+      quartier.listePI.map((pi: string) => {
+        MarkerApi.getPIFromId(pi).then((marker) => {
+          this.setState({ markers: [...this.state.markers, marker] });
+          this.setState({
+            constantMarkers: [...this.state.constantMarkers, marker]
+          });
+        });
+      });
     });
-  };
+  }
 
   componentDidMount() {
     this.loadMarkers();
   }
+
+  // componentDidUpdate() {
+  //   this.loadMarkers();
+  // }
 
   render() {
     const { markers, displayModal, themeChoisi } = this.state;
@@ -102,7 +106,7 @@ export default class Map extends Component<MapProps, MapState> {
       cityPicked,
       setLocation
     } = this.props;
-
+    console.log(markers);
     return markers ? (
       <View
         style={styles.container}
@@ -144,7 +148,7 @@ export default class Map extends Component<MapProps, MapState> {
           // Only on iOS MapKit, in meters. The property is ignored by Google Maps.
 
           style={styles.map}
-          //   showsUserLocation={true}
+          // showsUserLocation={true}
           showsCompass={true}
           showsMyLocationButton={true}
           // zoomEnabled={false}
@@ -159,6 +163,7 @@ export default class Map extends Component<MapProps, MapState> {
           {quartiers.map((quartier) => {
             return (
               <Quartier
+                key={quartier._id}
                 position={{ latitude, longitude }}
                 quartier={quartier}
               />

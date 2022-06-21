@@ -5,6 +5,6 @@ export default class Quartier {
     public _id: string,
     public name: String,
     public polygon: Array<{ longitude: number; latitude: number }>,
-    public listePI: Array<PointInteret>
+    public listePI: Array<string>
   ) {}
 }

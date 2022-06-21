@@ -7,7 +7,7 @@ interface quartier {
   _id: string;
   name: String;
   polygon: Array<{ longitude: number; latitude: number }>;
-  listePI: Array<PointInteret>;
+  listePI: Array<string>;
 }
 
 class EleveApi {
