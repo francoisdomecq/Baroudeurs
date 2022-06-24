@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, ReactNode, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -30,54 +30,44 @@ interface FormProps {
 }
 
 interface FormState {
-  selectedCity: String;
+  selectedCity: City;
   selectedUserType: string;
   constantCities: Array<City>;
   cities: Array<City>;
-  distance: Array<number>;
-  searchFiled: string;
   hasUpdated: boolean;
 }
 
-export default class Form extends Component<FormProps, FormState> {
-  constructor(public props: FormProps) {
-    super(props);
-    this.state = {
-      selectedCity: '',
-      selectedUserType: '',
-      searchFiled: '',
-      constantCities: [],
-      cities: [],
-      distance: [],
-      hasUpdated: false
-    };
-  }
+export default function FormFunction(props: FormProps) {
+  const [cities, setCities] = useState<Array<City>>([]);
+  const [constantCities, setConstantCities] = useState<Array<City>>([]);
+  const [selectedCity, setSelectedCity] = useState<City>(null!);
+  const [selectedUserType, setSelectedUserType] = useState<String>('');
+  const [hasUpdated, setHasUpdated] = useState<Boolean>(false);
 
-  searchCities(search: string) {
-    const citiesFiltered = this.state.constantCities.filter((city) => {
+  function searchCities(search: string) {
+    const citiesFiltered = constantCities.filter((city) => {
       return city.name.includes(search);
     });
-    this.setState({ cities: citiesFiltered });
+    setCities(citiesFiltered);
   }
 
-  selectCity(city: City) {
-    this.setState({ selectedCity: city.name });
-    this.props.selectCity(city);
+  function selectCity(city: any) {
+    setSelectedCity(city);
   }
 
-  selectUserType(user: string) {
-    this.setState({ selectedUserType: user });
-    this.props.setUserType(user);
+  function selectUserType(user: string) {
+    setSelectedUserType(user);
+    props.setUserType(user);
   }
 
-  loadCities = () => {
+  const loadCities = () => {
     CityApi.getAllCities().then((cities) => {
-      this.setState({ cities });
-      this.setState({ constantCities: cities });
+      setCities(cities);
+      setConstantCities(cities);
     });
   };
 
-  getLocation = () => {
+  const getLocation = () => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -85,49 +75,36 @@ export default class Form extends Component<FormProps, FormState> {
       }
       let location = await Location.getCurrentPositionAsync({});
       if (location) {
-        this.props.setLocation(
-          location.coords.latitude,
-          location.coords.longitude
-        );
+        props.setLocation(location.coords.latitude, location.coords.longitude);
       } else {
         alert('Pas récupérée');
       }
     })();
   };
 
-  componentDidMount() {
-    this.loadCities();
-    this.getLocation();
-  }
+  useEffect(() => {
+    loadCities();
+    getLocation();
+    setHasUpdated(false);
+  }, []);
 
-  componentDidUpdate() {
+  useEffect(() => {
     if (
-      this.state.cities.length > 0 &&
-      this.props.latitude !== 0 &&
-      this.props.longitude !== 0 &&
-      this.state.hasUpdated === false
+      cities.length > 0 &&
+      props.latitude !== 0 &&
+      props.longitude !== 0 &&
+      hasUpdated === false
     ) {
-      // this.state.cities.map((city) => {
-      //   let distance = getDistance(
-      //     { latitude: this.props.latitude, longitude: this.props.longitude },
-      //     {
-      //       latitude: city.latitude,
-      //       longitude: city.longitude
-      //     }
-      //   );
-      //   this.setState({ distance: [...this.state.distance, distance] });
-      // });
-
-      this.state.cities.sort((a, b) => {
+      const citiesSorted = cities.sort((a, b) => {
         let distanceA = getDistance(
-          { latitude: this.props.latitude, longitude: this.props.longitude },
+          { latitude: props.latitude, longitude: props.longitude },
           {
             latitude: a.latitude,
             longitude: a.longitude
           }
         );
         let distanceB = getDistance(
-          { latitude: this.props.latitude, longitude: this.props.longitude },
+          { latitude: props.latitude, longitude: props.longitude },
           {
             latitude: b.latitude,
             longitude: b.longitude
@@ -135,146 +112,337 @@ export default class Form extends Component<FormProps, FormState> {
         );
         return distanceA - distanceB;
       });
-      // this.setState({ constantCities: this.state.cities });
+      setCities(citiesSorted);
+      setConstantCities(citiesSorted);
+      setHasUpdated(true);
     }
-  }
+  });
 
-  render() {
-    const {
-      userType,
-      cityPicked,
-      setUserType,
-      setFormDone,
-      latitude,
-      longitude
-    } = this.props;
-
-    const { cities, selectedUserType, selectedCity } = this.state;
-    return explorateur && resident && cities && latitude && longitude ? (
-      <View style={styles.containerModal}>
-        <View style={styles.containerCities}>
-          <Text style={styles.textTitle}>Choisir une ville</Text>
-          <View style={styles.searchBar}>
-            <FontAwesome name="search" size={24} color="#f0efef" />
-            <TextInput
-              style={styles.searchInput}
-              onChange={(e) => this.searchCities(e.nativeEvent.text)}
-              placeholder="Recherchez"
-              placeholderTextColor={'#f0efef'}
-            />
-          </View>
-          <View style={styles.containerScrollView}>
-            <ScrollView style={styles.scrollview} contentContainerStyle={{}}>
-              {cities.length > 0 ? (
-                cities.map((city) => {
-                  return (
-                    <TouchableOpacity
-                      style={styles.cityView}
-                      key={city._id}
-                      onPress={() => this.selectCity(city)}
+  return explorateur &&
+    resident &&
+    cities &&
+    props.latitude &&
+    props.longitude &&
+    hasUpdated === true ? (
+    <View style={styles.containerModal}>
+      <View style={styles.containerCities}>
+        <Text style={styles.textTitle}>Choisir une ville</Text>
+        <View style={styles.searchBar}>
+          <FontAwesome name="search" size={24} color="#f0efef" />
+          <TextInput
+            style={styles.searchInput}
+            onChange={(e) => searchCities(e.nativeEvent.text)}
+            placeholder="Recherchez"
+            placeholderTextColor={'#f0efef'}
+          />
+        </View>
+        <View style={styles.containerScrollView}>
+          <ScrollView style={styles.scrollview} contentContainerStyle={{}}>
+            {cities.length > 0 ? (
+              cities.map((city) => {
+                return (
+                  <TouchableOpacity
+                    style={styles.cityView}
+                    key={city._id}
+                    onPress={() => selectCity(city)}
+                  >
+                    <Text
+                      style={
+                        stylesProps(
+                          (cities.indexOf(city) === 0 &&
+                            selectedCity === null!) ||
+                            (selectedCity && selectedCity.name === city.name)
+                            ? 1
+                            : 0.6
+                        ).textCity
+                      }
                     >
-                      <Text
-                        style={
-                          stylesProps(
-                            city.name === selectedCity ||
-                              (cities.indexOf(city) === 0 &&
-                                selectedCity === '')
-                              ? 1
-                              : 0.6
-                          ).textCity
-                        }
-                      >
-                        {city.name}
-                      </Text>
-                      <Text
-                        style={
-                          stylesProps(
-                            city.name === selectedCity ||
-                              (cities.indexOf(city) === 0 &&
-                                selectedCity === '')
-                              ? 1
-                              : 0.6
-                          ).textCity
-                        }
-                      >
-                        {cities.indexOf(city) === 0
-                          ? 'Vous êtes ici'
-                          : getDistance(
-                              { latitude: latitude, longitude: longitude },
-                              {
-                                latitude: city.latitude,
-                                longitude: city.longitude
-                              },
-                              100
-                            ) /
-                              1000 +
-                            ' km'}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })
-              ) : (
-                <Text style={stylesProps(1).textCity}>
-                  Aucune vile ne correspond
-                </Text>
-              )}
-            </ScrollView>
+                      {city.name}
+                    </Text>
+                    <Text
+                      style={
+                        stylesProps(
+                          (cities.indexOf(city) === 0 &&
+                            selectedCity === null!) ||
+                            (selectedCity && selectedCity.name === city.name)
+                            ? 1
+                            : 0.6
+                        ).textCity
+                      }
+                    >
+                      {getDistance(
+                        {
+                          latitude: props.latitude,
+                          longitude: props.longitude
+                        },
+                        {
+                          latitude: city.latitude,
+                          longitude: city.longitude
+                        },
+                        100
+                      ) /
+                        1000 +
+                        ' km'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <Text style={stylesProps(1).textCity}>
+                Aucune vile ne correspond
+              </Text>
+            )}
+          </ScrollView>
+        </View>
+      </View>
+      {selectedCity !== null ? (
+        <View style={styles.containerBaroudeur}>
+          <Text style={styles.textTitle}>
+            A {selectedCity.name}, vous êtes :
+          </Text>
+          <View style={styles.containerImage}>
+            <TouchableOpacity
+              style={styles.imageText}
+              onPress={() => selectUserType('Explorateur')}
+            >
+              <Image
+                style={
+                  stylesProps(selectedUserType === 'Explorateur' ? 0.6 : 1)
+                    .image
+                }
+                source={explorateur}
+              />
+              <Text style={styles.textUnderImage}>Explorateur</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.imageText}
+              onPress={() => selectUserType('Résident')}
+            >
+              <Image
+                style={
+                  stylesProps(selectedUserType === 'Résident' ? 0.6 : 1).image
+                }
+                source={resident}
+              />
+              <Text style={styles.textUnderImage}>Résident</Text>
+            </TouchableOpacity>
           </View>
         </View>
-        {cityPicked ? (
-          <View style={styles.containerBaroudeur}>
-            <Text style={styles.textTitle}>
-              A {cityPicked.name}, vous êtes :
-            </Text>
-            <View style={styles.containerImage}>
-              <TouchableOpacity
-                style={styles.imageText}
-                onPress={() => this.selectUserType('Explorateur')}
-              >
-                <Image
-                  style={
-                    stylesProps(selectedUserType === 'Explorateur' ? 0.6 : 1)
-                      .image
-                  }
-                  source={explorateur}
-                />
-                <Text style={styles.textUnderImage}>Explorateur</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.imageText}
-                onPress={() => this.selectUserType('Résident')}
-              >
-                <Image
-                  style={
-                    stylesProps(selectedUserType === 'Résident' ? 0.6 : 1).image
-                  }
-                  source={resident}
-                />
-                <Text style={styles.textUnderImage}>Résident</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null}
-        {cityPicked && userType ? (
-          <TouchableOpacity
-            style={styles.buttonValider}
-            onPress={() =>
-              cityPicked !== null && userType !== null
-                ? setFormDone(cityPicked, userType)
-                : alert('Veuillez compléter les champs requis')
-            }
-          >
-            <Text style={styles.textButton}>Valider</Text>
-          </TouchableOpacity>
-        ) : null}
-      </View>
-    ) : (
-      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-        <ActivityIndicator size="large" color="#46B82F" />
-      </View>
-    );
-  }
+      ) : null}
+      {selectedCity && props.userType ? (
+        <TouchableOpacity
+          style={styles.buttonValider}
+          onPress={() =>
+            selectedCity !== null && props.userType !== null
+              ? props.setFormDone(selectedCity, props.userType)
+              : alert('Veuillez compléter les champs requis')
+          }
+        >
+          <Text style={styles.textButton}>Valider</Text>
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  ) : (
+    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+      <ActivityIndicator size="large" color="#46B82F" />
+    </View>
+  );
 }
+
+// export default class Form extends Component<FormProps, FormState> {
+//   constructor(public props: FormProps) {
+//     super(props);
+//     this.state = {
+//       selectedCity: null!,
+//       selectedUserType: '',
+//       searchFiled: '',
+//       constantCities: [],
+//       cities: [],
+//       distance: [],
+//       hasUpdated: false
+//     };
+//   }
+
+//   componentDidMount() {
+//     this.loadCities();
+//     this.getLocation();
+//   }
+
+//   componentDidUpdate() {
+//     if (
+//       this.state.cities.length > 0 &&
+//       this.props.latitude !== 0 &&
+//       this.props.longitude !== 0 &&
+//       this.state.hasUpdated === false
+//     ) {
+//       // this.state.cities.map((city) => {
+//       //   let distance = getDistance(
+//       //     { latitude: this.props.latitude, longitude: this.props.longitude },
+//       //     {
+//       //       latitude: city.latitude,
+//       //       longitude: city.longitude
+//       //     }
+//       //   );
+//       //   this.setState({ distance: [...this.state.distance, distance] });
+//       // });
+
+//       this.state.cities.sort((a, b) => {
+//         let distanceA = getDistance(
+//           { latitude: this.props.latitude, longitude: this.props.longitude },
+//           {
+//             latitude: a.latitude,
+//             longitude: a.longitude
+//           }
+//         );
+//         let distanceB = getDistance(
+//           { latitude: this.props.latitude, longitude: this.props.longitude },
+//           {
+//             latitude: b.latitude,
+//             longitude: b.longitude
+//           }
+//         );
+//         return distanceA - distanceB;
+//       });
+//       // this.setState({ constantCities: this.state.cities });
+//     }
+//   }
+
+//   render() {
+//     const {
+//       userType,
+//       cityPicked,
+//       setUserType,
+//       setFormDone,
+//       latitude,
+//       longitude
+//     } = this.props;
+
+//     const { cities, selectedUserType, selectedCity } = this.state;
+//     return explorateur && resident && cities && latitude && longitude ? (
+//       <View style={styles.containerModal}>
+//         <View style={styles.containerCities}>
+//           <Text style={styles.textTitle}>Choisir une ville</Text>
+//           <View style={styles.searchBar}>
+//             <FontAwesome name="search" size={24} color="#f0efef" />
+//             <TextInput
+//               style={styles.searchInput}
+//               onChange={(e) => this.searchCities(e.nativeEvent.text)}
+//               placeholder="Recherchez"
+//               placeholderTextColor={'#f0efef'}
+//             />
+//           </View>
+//           <View style={styles.containerScrollView}>
+//             <ScrollView style={styles.scrollview} contentContainerStyle={{}}>
+//               {cities.length > 0 ? (
+//                 cities.map((city) => {
+//                   return (
+//                     <TouchableOpacity
+//                       style={styles.cityView}
+//                       key={city._id}
+//                       onPress={() => this.selectCity(city)}
+//                     >
+//                       <Text
+//                         style={
+//                           stylesProps(
+//                             (cities.indexOf(city) === 0 &&
+//                               selectedCity === null!) ||
+//                               (selectedCity && selectedCity.name === city.name)
+//                               ? 1
+//                               : 0.6
+//                           ).textCity
+//                         }
+//                       >
+//                         {city.name}
+//                       </Text>
+//                       <Text
+//                         style={
+//                           stylesProps(
+//                             (cities.indexOf(city) === 0 &&
+//                               selectedCity === null!) ||
+//                               (selectedCity && selectedCity.name === city.name)
+//                               ? 1
+//                               : 0.6
+//                           ).textCity
+//                         }
+//                       >
+//                         {cities.indexOf(city) === 0
+//                           ? 'Vous êtes ici'
+//                           : getDistance(
+//                               { latitude: latitude, longitude: longitude },
+//                               {
+//                                 latitude: city.latitude,
+//                                 longitude: city.longitude
+//                               },
+//                               100
+//                             ) /
+//                               1000 +
+//                             ' km'}
+//                       </Text>
+//                     </TouchableOpacity>
+//                   );
+//                 })
+//               ) : (
+//                 <Text style={stylesProps(1).textCity}>
+//                   Aucune vile ne correspond
+//                 </Text>
+//               )}
+//             </ScrollView>
+//           </View>
+//         </View>
+//         {selectedCity ? (
+//           <View style={styles.containerBaroudeur}>
+//             <Text style={styles.textTitle}>
+//               A {selectedCity.name}, vous êtes :
+//             </Text>
+//             <View style={styles.containerImage}>
+//               <TouchableOpacity
+//                 style={styles.imageText}
+//                 onPress={() => this.selectUserType('Explorateur')}
+//               >
+//                 <Image
+//                   style={
+//                     stylesProps(selectedUserType === 'Explorateur' ? 0.6 : 1)
+//                       .image
+//                   }
+//                   source={explorateur}
+//                 />
+//                 <Text style={styles.textUnderImage}>Explorateur</Text>
+//               </TouchableOpacity>
+//               <TouchableOpacity
+//                 style={styles.imageText}
+//                 onPress={() => this.selectUserType('Résident')}
+//               >
+//                 <Image
+//                   style={
+//                     stylesProps(selectedUserType === 'Résident' ? 0.6 : 1).image
+//                   }
+//                   source={resident}
+//                 />
+//                 <Text style={styles.textUnderImage}>Résident</Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         ) : null}
+//         {selectedCity && userType ? (
+//           <TouchableOpacity
+//             style={styles.buttonValider}
+//             onPress={() =>
+//               selectedCity !== null && userType !== null
+//                 ? setFormDone(selectedCity, userType)
+//                 : alert('Veuillez compléter les champs requis')
+//             }
+//           >
+//             <Text style={styles.textButton}>Valider</Text>
+//           </TouchableOpacity>
+//         ) : null}
+//       </View>
+//     ) : (
+//       <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+//         <ActivityIndicator size="large" color="#46B82F" />
+//       </View>
+//     );
+//   }
+// }
 
 const styles = StyleSheet.create({
   containerModal: {
