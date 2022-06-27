@@ -1,12 +1,5 @@
-import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  Button,
-  ActivityIndicator
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Image, ActivityIndicator } from 'react-native';
 import { RootStackParamList, NavigationProps } from '../navigation/app-stacks';
 import { RouteProp } from '@react-navigation/core';
 
@@ -17,50 +10,36 @@ interface DetailsProps extends NavigationProps {
   route: RouteProp<RootStackParamList, 'Details'>;
 }
 
-interface DetailsState {
-  marker: Marker;
-}
-//Cette fonction affiche les détails d'un point d'intérêt lorsque l'utilisateur sur la fiche descriptive
-export default class Details extends Component<DetailsProps, DetailsState> {
-  constructor(public props: DetailsProps) {
-    super(props);
-    this.state = {
-      marker: null!
-    };
-  }
+export default function DetailsFunction(props: DetailsProps) {
+  const [marker, setMarker] = useState<Marker>(null!);
 
-  componentDidMount() {
-    const markerId = this.props.route.params.markerId;
+  useEffect(() => {
+    const markerId = props.route.params.markerId;
     setTimeout(() => {
-      MarkerApi.getPIFromId(markerId).then((marker) =>
-        this.setState({ marker })
-      );
+      MarkerApi.getPIFromId(markerId).then((marker) => setMarker(marker));
     }, 200);
-  }
+  }, []);
 
-  render() {
-    const { marker } = this.state;
-    return marker ? (
-      <View>
-        <View style={styles.detail}>
-          <View>
-            <Text style={styles.name}>{marker.name}</Text>
-          </View>
-          <View style={styles.containerImage}>
-            <Image style={styles.image} source={marker.img}></Image>
-          </View>
-          <View>
-            <Text style={styles.title}>Histoire</Text>
-            <Text>{marker.histoire} </Text>
-          </View>
+  return marker ? (
+    <View>
+      <View style={styles.detail}>
+        <View>
+          <Text style={styles.name}>{marker.name}</Text>
+        </View>
+        <View style={styles.containerImage}>
+          <Image style={styles.image} source={marker.img}></Image>
+        </View>
+        <View>
+          <Text style={styles.title}>Histoire</Text>
+          <Text>{marker.histoire} </Text>
         </View>
       </View>
-    ) : (
-      <View style={styles.container}>
-        <ActivityIndicator size={'large'} color="#000000" />
-      </View>
-    );
-  }
+    </View>
+  ) : (
+    <View style={styles.container}>
+      <ActivityIndicator size={'large'} color="#000000" />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

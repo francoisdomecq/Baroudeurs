@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ThemeButton from './ThemeButton';
 import Redirect from './Redirect';
 
-interface ModalMapProps {
+interface ModalMapProps extends NavigationProps {
   setModalVisible: Function;
   modalVisible: boolean;
   selectTheme: Function;
@@ -19,121 +19,112 @@ interface ModalMapProps {
 }
 
 import { THEMES } from '../Data/Theme';
+import { NavigationProps } from '../navigation/app-stacks';
 
 interface ModalMapState {}
 
-export default class ModalMap extends Component<ModalMapProps> {
-  constructor(public props: ModalMapProps) {
-    super(props);
-  }
-  render() {
-    const { modalVisible, setModalVisible, selectTheme, themeChoisi } =
-      this.props;
-    return (
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={styles.modalHeader}>
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => setModalVisible(!modalVisible)}
-                >
-                  <Ionicons name="close-sharp" size={28} color="#828282" />
-                </Pressable>
-                <Text style={styles.headerTitle}>
-                  Paramètres de l'application
-                </Text>
-              </View>
-              <Text style={styles.modalText}>Choisir un thème</Text>
-              <View style={styles.containerScrollView}>
-                <ScrollView
-                  horizontal
-                  scrollEventThrottle={1}
-                  showsHorizontalScrollIndicator={false}
-                  style={styles.scrollview}
-                >
-                  {
-                    //On récupère ici les différents thèmes que nous avons défini dans Themes.js
-                    THEMES.map((theme) => (
-                      <ThemeButton
-                        key={theme.id}
-                        theme={theme}
-                        selectTheme={selectTheme}
-                        themeChoisi={themeChoisi}
-                      />
-                    ))
-                  }
-                </ScrollView>
-              </View>
-              <Text style={styles.modalText}>Paramètres</Text>
-              <View style={styles.redirect}>
-                <Redirect
-                  firstIcon={
-                    <Ionicons name="earth" size={24} color="#46B82F" />
-                  }
-                  category="Ville"
-                  description="Bordeaux"
-                  secondIcon={
-                    <Ionicons
-                      name="chevron-forward"
-                      size={24}
-                      color="#cbcbcb"
+export default function ModalMap(props: ModalMapProps) {
+  const {
+    modalVisible,
+    setModalVisible,
+    selectTheme,
+    themeChoisi,
+    navigation
+  } = props;
+  return (
+    <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.modalHeader}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Ionicons name="close-sharp" size={28} color="#828282" />
+              </Pressable>
+              <Text style={styles.headerTitle}>
+                Paramètres de l'application
+              </Text>
+            </View>
+            <Text style={styles.modalText}>Choisir un thème</Text>
+            <View style={styles.containerScrollView}>
+              <ScrollView
+                horizontal
+                scrollEventThrottle={1}
+                showsHorizontalScrollIndicator={false}
+                style={styles.scrollview}
+              >
+                {
+                  //On récupère ici les différents thèmes que nous avons défini dans Themes.js
+                  THEMES.map((theme) => (
+                    <ThemeButton
+                      key={theme.id}
+                      theme={theme}
+                      selectTheme={selectTheme}
+                      themeChoisi={themeChoisi}
                     />
-                  }
-                />
-              </View>
-              <View style={styles.redirect}>
-                <Redirect
-                  firstIcon={
-                    <Ionicons name="person" size={24} color="#46B82F" />
-                  }
-                  category="Compte"
-                  description="Modifer le profil"
-                  secondIcon={
-                    <Ionicons
-                      name="chevron-forward"
-                      size={24}
-                      color="#cbcbcb"
-                    />
-                  }
-                />
-              </View>
-              <View style={styles.redirect}>
-                <Redirect
-                  firstIcon={
-                    <Ionicons name="newspaper" size={24} color="#46B82F" />
-                  }
-                  category="Journal"
-                  description="Modifer le journal"
-                  secondIcon={
-                    <Ionicons
-                      name="chevron-forward"
-                      size={24}
-                      color="#cbcbcb"
-                    />
-                  }
-                />
-              </View>
-              <View>
-                <Text>
-                  Succes dans bordeaux{' '}
-                  {/*afficher liste succes  bdx scrollview et griser ceux pas obtenus*/}
-                </Text>
-              </View>
+                  ))
+                }
+              </ScrollView>
+            </View>
+            <Text style={styles.modalText}>Paramètres</Text>
+            <View style={styles.redirect}>
+              <Redirect
+                firstIcon={<Ionicons name="earth" size={24} color="#46B82F" />}
+                category="Ville"
+                description="Bordeaux"
+                secondIcon={
+                  <Ionicons name="chevron-forward" size={24} color="#cbcbcb" />
+                }
+                onPress={() => console.log('pressed')}
+                navigation={navigation}
+              />
+            </View>
+            <View style={styles.redirect}>
+              <Redirect
+                firstIcon={<Ionicons name="person" size={24} color="#46B82F" />}
+                category="Compte"
+                description="Modifer le profil"
+                secondIcon={
+                  <Ionicons name="chevron-forward" size={24} color="#cbcbcb" />
+                }
+                onPress={() => console.log('pressed')}
+                navigation={navigation}
+              />
+            </View>
+            <View style={styles.redirect}>
+              <Redirect
+                firstIcon={
+                  <Ionicons name="newspaper" size={24} color="#46B82F" />
+                }
+                category="Journal"
+                description="Modifer le journal"
+                secondIcon={
+                  <Ionicons name="chevron-forward" size={24} color="#cbcbcb" />
+                }
+                onPress={() => console.log('pressed')}
+                navigation={navigation}
+              />
+            </View>
+            <View>
+              <Text>
+                Succes dans bordeaux{' '}
+                {/*afficher liste succes  bdx scrollview et griser ceux pas obtenus*/}
+              </Text>
             </View>
           </View>
-        </Modal>
-      </View>
-    );
-  }
+        </View>
+      </Modal>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

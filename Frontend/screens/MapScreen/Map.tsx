@@ -84,7 +84,9 @@ export default function MapFunction(props: MapProps) {
 
   useEffect(() => {
     loadMarkers();
+    props.quartiers.map((quartier) => console.log(quartier.name));
   }, []);
+
   return markers ? (
     <View
       style={styles.container}
@@ -141,7 +143,7 @@ export default function MapFunction(props: MapProps) {
         {props.quartiers.map((quartier) => {
           return (
             <Quartier
-              key={quartier._id}
+              key={quartier._id + quartier.name}
               position={{
                 latitude: props.latitude,
                 longitude: props.longitude

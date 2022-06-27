@@ -2,32 +2,32 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import { NavigationProps } from '../navigation/app-stacks';
 
-interface RedirectProps {
+interface RedirectProps extends NavigationProps {
   firstIcon: JSX.Element;
   category: string;
   description: string;
   secondIcon: JSX.Element;
+  onPress: Function;
 }
 
 interface RedirectState {}
 
-class Redirect extends Component<RedirectProps, RedirectState> {
-  render() {
-    const { firstIcon, category, description, secondIcon } = this.props;
-    return (
-      <TouchableOpacity style={styles.container}>
-        <View style={styles.containerTextImage}>
-          {firstIcon}
-          <Text style={styles.textVille}>{category}</Text>
-        </View>
-        <View style={styles.containerCity}>
-          <Text style={styles.textCity}>{description}</Text>
-          {secondIcon}
-        </View>
-      </TouchableOpacity>
-    );
-  }
+export default function Redirect(props: RedirectProps) {
+  const { firstIcon, category, description, secondIcon, onPress } = props;
+  return (
+    <TouchableOpacity style={styles.container} onPress={() => onPress()}>
+      <View style={styles.containerTextImage}>
+        {firstIcon}
+        <Text style={styles.textVille}>{category}</Text>
+      </View>
+      <View style={styles.containerCity}>
+        <Text style={styles.textCity}>{description}</Text>
+        {secondIcon}
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -65,5 +65,3 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   }
 });
-
-export default Redirect;

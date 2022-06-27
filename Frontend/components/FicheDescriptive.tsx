@@ -8,25 +8,23 @@ interface FicheDescriptiveProps extends NavigationProps {
 }
 
 //Cette fonction permet d'afficher la fiche descriptive d'un marqueur. Elle prend donc en entrée le marqueur à afficher afin d'afficher les différentes informations
-export default class FicheDescriptive extends Component<FicheDescriptiveProps> {
-  render() {
-    const { markers } = this.props;
-    return (
-      <View style={styles.ficheDescriptive}>
-        <View style={styles.title}>
-          <Text style={styles.name}>{markers.name}</Text>
-        </View>
-        <View style={styles.containerImage}>
-          <Image style={styles.image} source={markers.img}></Image>
-        </View>
-        <View style={styles.containerDescription}>
-          <Text style={styles.description} numberOfLines={7}>
-            {markers.description}
-          </Text>
-        </View>
+export default function FicheDescriptive(props: FicheDescriptiveProps) {
+  const { markers } = props;
+  return (
+    <View style={styles.ficheDescriptive}>
+      <View style={styles.title}>
+        <Text style={styles.name}>{markers.name}</Text>
       </View>
-    );
-  }
+      <View style={styles.containerImage}>
+        <Image style={styles.image} source={markers.img}></Image>
+      </View>
+      <View style={styles.containerDescription}>
+        <Text style={styles.description} numberOfLines={7}>
+          {markers.description}
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

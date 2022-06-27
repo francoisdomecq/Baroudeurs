@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Appearance } from 'react-native';
 import { NavigationProps } from '../../navigation/app-stacks';
 
@@ -22,91 +22,88 @@ interface MapState {
   userType: string;
   formDone: boolean;
 }
-export default class MapScreen extends Component<MapProps, MapState> {
-  constructor(public props: MapProps) {
-    super(props);
-    this.state = {
-      colorScheme: null!,
-      latitude: 0,
-      longitude: 0,
-      cityPicked: null!,
-      quartiers: [],
-      userType: null!,
-      formDone: false
-    };
-  }
+export default function MapScreenFunction(props: MapProps) {
+  const [colorScheme, setColorScheme] = useState<string>('');
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+  const [cityPicked, setCityPicked] = useState<City>(null!);
+  const [quartiers, setQuartiers] = useState<Array<Quartier>>([]);
+  const [userType, setUserType] = useState<string>('');
+  const [isFormDone, setIsFormDone] = useState<boolean>(false);
 
-  selectCity = (city: City) => {
-    this.setState({
-      cityPicked: city
-    });
-    this.setLocation(city.latitude, city.longitude);
+  const selectCity = (city: City) => {
+    setCityPicked(city);
+    setLocation(city.latitude, city.longitude);
   };
 
-  setUserType = (userType: string) => {
-    this.setState({ userType });
+  const modifyUserTypeState = (userType: string) => {
+    setUserType(userType);
   };
 
-  setFormDone = (cityPicked: City, userType: string) => {
+  const clearForm = () => {
+    AsyncStorage.clear();
+    setIsFormDone(false);
+  };
+
+  const setFormDone = (cityPicked: City, userType: string) => {
     FormService.setFormDone({ cityPicked, userType });
-    this.setState({ formDone: true });
-    cityPicked.quartiers.map((quartierId) => {
-      QuartierApi.getQuartierFromId(quartierId).then((quartierObject) => {
-        this.setState({ quartiers: [...this.state.quartiers, quartierObject] });
-      });
-    });
+    setIsFormDone(true);
+    setCityPicked(cityPicked);
+    // cityPicked.quartiers.map((quartierId) => {
+    //   QuartierApi.getQuartierFromId(quartierId).then((quartierObject) => {
+    //     // setQuartiers([...quartiers, quartierObject]);
+    //     console.log(quartierObject.name);
+    //   });
+    // });
   };
 
-  async isFormDone() {
+  const findIsFormDone = async () => {
     const Form = await FormService.getFormState();
     if (Form !== undefined) {
-      this.selectCity(Form.cityPicked);
-      this.setState({ userType: Form.userType });
+      setCityPicked(Form.cityPicked);
+      setUserType(Form.userType);
       Form.cityPicked.quartiers.map((quartierId) => {
         QuartierApi.getQuartierFromId(quartierId).then((quartierObject) => {
-          this.setState({
-            quartiers: [...this.state.quartiers, quartierObject]
-          });
+          let quartiersToAdd = [...quartiers];
+          quartiersToAdd.push(quartierObject);
+          setQuartiers(quartiersToAdd);
+          quartiers.map((quartier) => console.log(quartier.name));
         });
       });
-      this.setState({ formDone: true });
-    } else this.setState({ formDone: false });
-  }
-
-  setLocation = (latitude: number, longitude: number) => {
-    this.setState({ latitude });
-    this.setState({ longitude });
+      setIsFormDone(true);
+    } else setIsFormDone(false);
   };
 
-  componentDidMount() {
-    AsyncStorage.clear();
-    this.isFormDone();
-  }
+  const setLocation = (latitude: number, longitude: number) => {
+    setLatitude(latitude);
+    setLongitude(longitude);
+  };
 
-  render() {
-    const { latitude, longitude, cityPicked, quartiers, formDone, userType } =
-      this.state;
-    return formDone ? (
-      <Map
-        userType={userType}
-        latitude={latitude}
-        longitude={longitude}
-        cityPicked={cityPicked}
-        quartiers={quartiers}
-        setLocation={this.setLocation}
-        navigation={this.props.navigation}
-      />
-    ) : (
-      <Form
-        userType={userType}
-        cityPicked={cityPicked}
-        latitude={latitude}
-        longitude={longitude}
-        setUserType={this.setUserType}
-        selectCity={this.selectCity}
-        setFormDone={this.setFormDone}
-        setLocation={this.setLocation}
-      />
-    );
-  }
+  useEffect(() => {
+    AsyncStorage.clear();
+    findIsFormDone();
+  }, []);
+
+  return isFormDone ? (
+    <Map
+      userType={userType}
+      latitude={latitude}
+      longitude={longitude}
+      cityPicked={cityPicked}
+      quartiers={quartiers}
+      setLocation={setLocation}
+      navigation={props.navigation}
+    />
+  ) : (
+    <Form
+      userType={userType}
+      cityPicked={cityPicked}
+      latitude={latitude}
+      longitude={longitude}
+      setUserType={modifyUserTypeState}
+      selectCity={selectCity}
+      setFormDone={setFormDone}
+      setLocation={setLocation}
+    />
+  );
 }

@@ -9,6 +9,7 @@ import Map from '../screens/MapScreen/Screen';
 import User from '../screens/User';
 import Details from '../screens/Details';
 import Quete from '../screens/Quetes';
+import Form from '../screens/MapScreen/Form';
 
 // Define view (screen) names and associated params
 // Enables type checking and code completion for views
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Map: undefined;
   User: undefined;
   Quete: undefined;
+  Form: undefined;
   Details: { markerId: string };
 };
 
@@ -51,6 +53,7 @@ export const MapStackScreen = () => {
       />
       <MapStack.Screen name="User" component={User} />
       <MapStack.Screen name="Details" component={Details} />
+      <MapStack.Screen name="Form" component={Form} />
     </MapStack.Navigator>
   );
 };
