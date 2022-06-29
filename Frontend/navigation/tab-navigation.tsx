@@ -61,11 +61,6 @@ export function TabNavigator() {
           name="Quete"
           component={QueteStackScreen}
         />
-        <Tab.Screen
-          options={{ title: 'Profil' }}
-          name="User"
-          component={UserStackScreen}
-        />
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -1,10 +1,9 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
-import { getDistance } from 'geolib';
 
 import CustomMarker from '../../components/CustomMarker';
 import ModalMap from '../../components/ModalMap';
@@ -13,18 +12,14 @@ import Quartier from '../../components/Quartier';
 import MarkerApi from '../../services/point_interet.api_service';
 import MarkerModel from '../../services/point_interet.model';
 import City from '../../services/city.model';
-import QuartierModel from '../../services/quartier.model';
 
-interface MapProps extends NavigationProps {
-  latitude: number;
-  longitude: number;
-  cityPicked: City;
-  quartiers: Array<QuartierModel>;
-  userType: string;
-  setLocation: Function;
-}
+import { AppContext } from '../../utils/context';
+
+interface MapProps extends NavigationProps {}
 
 export default function MapFunction(props: MapProps) {
+  const { latitude, longitude, setPosition, cityPicked, userType, quartiers } =
+    useContext(AppContext);
   const [markers, SetMarkers] = useState<Array<MarkerModel>>([]);
   const [constantMarkers, setConstantMarkers] = useState<Array<MarkerModel>>(
     []
@@ -88,27 +83,14 @@ export default function MapFunction(props: MapProps) {
 
   useEffect(() => {
     loadMarkers();
-    props.quartiers.map((quartier) => console.log(quartier.name));
   }, []);
 
   return markers ? (
-    <View
-      style={styles.container}
-      // onTouchStart={() =>
-      //   this.props.navigation.setOptions({
-      //     headerShown: true
-      //   })
-      // }
-      // onTouchEnd={() =>
-      //   this.props.navigation.setOptions({
-      //     headerShown: false
-      //   })
-      // }
-    >
+    <View style={styles.container}>
       <MapView
         initialRegion={{
-          latitude: props.latitude,
-          longitude: props.longitude,
+          latitude: latitude,
+          longitude: longitude,
           latitudeDelta: 0.1,
           longitudeDelta: 0.1
         }}
@@ -117,12 +99,12 @@ export default function MapFunction(props: MapProps) {
           //On déplace la caméra du joueur vers ses coordoonées (latitude, longitude)
           const latitude = user.nativeEvent.coordinate.latitude;
           const longitude = user.nativeEvent.coordinate.longitude;
-          props.setLocation(latitude, longitude);
+          setPosition(latitude, longitude);
         }}
         camera={{
           center: {
-            longitude: props.longitude,
-            latitude: props.latitude
+            longitude: longitude,
+            latitude: latitude
           },
           pitch: 70,
           heading: 0,
@@ -140,24 +122,24 @@ export default function MapFunction(props: MapProps) {
       >
         <Marker
           coordinate={{
-            latitude: props.latitude,
-            longitude: props.longitude
+            latitude: latitude,
+            longitude: longitude
           }}
         />
-        {props.quartiers.map((quartier) => {
+        {quartiers.map((quartier) => {
           return (
             <Quartier
               key={quartier._id + quartier.name}
               position={{
-                latitude: props.latitude,
-                longitude: props.longitude
+                latitude: latitude,
+                longitude: longitude
               }}
               quartier={quartier}
             />
           );
         })}
 
-        <Polyline coordinates={props.cityPicked.polygon} strokeWidth={2} />
+        <Polyline coordinates={cityPicked.polygon} strokeWidth={2} />
 
         {/* {markers.map((marker) => {
           return getDistance(

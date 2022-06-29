@@ -1,4 +1,4 @@
-import { Component, ReactNode, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,22 +14,18 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import City from '../../services/city.model';
 import CityApi from '../../services/city.api_service';
+import { AppContext } from '../../utils/context';
 
 const explorateur = require('../../assets/explorer.png');
 const resident = require('../../assets/resident.png');
 
 interface FormProps {
-  latitude: number;
-  longitude: number;
-  cityPicked: City;
-  userType: string;
-  selectCity: Function;
-  setUserType: Function;
   setFormDone: Function;
-  setLocation: Function;
 }
 
 export default function FormFunction(props: FormProps) {
+  const { latitude, longitude, setPosition, userType, setUserType } =
+    useContext(AppContext);
   const [cities, setCities] = useState<Array<City>>([]);
   const [constantCities, setConstantCities] = useState<Array<City>>([]);
   const [selectedCity, setSelectedCity] = useState<City>(null!);
@@ -43,13 +39,9 @@ export default function FormFunction(props: FormProps) {
     setCities(citiesFiltered);
   }
 
-  function selectCity(city: any) {
-    setSelectedCity(city);
-  }
-
   function selectUserType(user: string) {
     setSelectedUserType(user);
-    props.setUserType(user);
+    setUserType(user);
   }
 
   const loadCities = () => {
@@ -67,7 +59,7 @@ export default function FormFunction(props: FormProps) {
       }
       let location = await Location.getCurrentPositionAsync({});
       if (location) {
-        props.setLocation(location.coords.latitude, location.coords.longitude);
+        setPosition(location.coords.latitude, location.coords.longitude);
       } else {
         alert('Pas récupérée');
       }
@@ -83,20 +75,20 @@ export default function FormFunction(props: FormProps) {
   useEffect(() => {
     if (
       cities.length > 0 &&
-      props.latitude !== 0 &&
-      props.longitude !== 0 &&
+      latitude !== 0 &&
+      longitude !== 0 &&
       hasUpdated === false
     ) {
       const citiesSorted = cities.sort((a, b) => {
         let distanceA = getDistance(
-          { latitude: props.latitude, longitude: props.longitude },
+          { latitude: latitude, longitude: longitude },
           {
             latitude: a.latitude,
             longitude: a.longitude
           }
         );
         let distanceB = getDistance(
-          { latitude: props.latitude, longitude: props.longitude },
+          { latitude: latitude, longitude: longitude },
           {
             latitude: b.latitude,
             longitude: b.longitude
@@ -113,8 +105,8 @@ export default function FormFunction(props: FormProps) {
   return explorateur &&
     resident &&
     cities &&
-    props.latitude &&
-    props.longitude &&
+    latitude &&
+    longitude &&
     hasUpdated === true ? (
     <View style={styles.containerModal}>
       <View style={styles.containerCities}>
@@ -136,7 +128,7 @@ export default function FormFunction(props: FormProps) {
                   <TouchableOpacity
                     style={styles.cityView}
                     key={city._id}
-                    onPress={() => selectCity(city)}
+                    onPress={() => setSelectedCity(city)}
                   >
                     <Text
                       style={
@@ -164,8 +156,8 @@ export default function FormFunction(props: FormProps) {
                     >
                       {getDistance(
                         {
-                          latitude: props.latitude,
-                          longitude: props.longitude
+                          latitude: latitude,
+                          longitude: longitude
                         },
                         {
                           latitude: city.latitude,
@@ -221,12 +213,12 @@ export default function FormFunction(props: FormProps) {
           </View>
         </View>
       ) : null}
-      {selectedCity && props.userType ? (
+      {selectedCity && userType ? (
         <TouchableOpacity
           style={styles.buttonValider}
           onPress={() =>
-            selectedCity !== null && props.userType !== null
-              ? props.setFormDone(selectedCity, props.userType)
+            selectedCity !== null && userType !== null
+              ? props.setFormDone(selectedCity, userType)
               : alert('Veuillez compléter les champs requis')
           }
         >
