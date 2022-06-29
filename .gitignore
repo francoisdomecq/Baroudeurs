@@ -105,4 +105,4 @@ dist
 idMongodb.txt
 Backend/connect.js
 
-Frontend/app.json
+Frontend/*.app.json
