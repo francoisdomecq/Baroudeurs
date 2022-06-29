@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { Polyline, Marker } from 'react-native-maps';
+import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { NavigationProps } from '../../navigation/app-stacks';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -14,6 +14,8 @@ import MarkerModel from '../../services/point_interet.model';
 import City from '../../services/city.model';
 
 import { AppContext } from '../../utils/context';
+import { mapStyleLight } from '../../Data/mapStyleLight';
+import { mapStyleDark } from '../../Data/mapStyleDark';
 
 interface MapProps extends NavigationProps {}
 
@@ -26,12 +28,13 @@ export default function MapFunction(props: MapProps) {
   );
   const [themeChoisi, setThemeChoisi] = useState<Array<string>>([]);
   const [displayModal, setDisplayModal] = useState<boolean>(false);
+  const [isMapDark, setMapDark] = useState<boolean>(false);
 
   const setModalVisible = (modalVisible: boolean) => {
     setDisplayModal(modalVisible);
   };
 
-  function selectTheme(theme: string) {
+  const selectTheme = (theme: string) => {
     if (themeChoisi.includes(theme)) {
       const newThemesArray = [...themeChoisi];
       newThemesArray.splice(newThemesArray.indexOf(theme));
@@ -54,17 +57,16 @@ export default function MapFunction(props: MapProps) {
         setDisplayModal(false);
       }
     }
-  }
+  };
 
-  function filter(themeChoisi: Array<string>) {
+  const filter = (themeChoisi: Array<string>) => {
     const filteredMarkers = constantMarkers.filter((marker) => {
       if (themeChoisi.includes(marker.theme)) {
-        console.log(marker);
         return marker;
       }
     });
     SetMarkers(filteredMarkers);
-  }
+  };
 
   function loadMarkers() {
     // props.quartiers.forEach((quartier) => {
@@ -88,6 +90,7 @@ export default function MapFunction(props: MapProps) {
   return markers ? (
     <View style={styles.container}>
       <MapView
+        // provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: latitude,
           longitude: longitude,
@@ -112,7 +115,8 @@ export default function MapFunction(props: MapProps) {
           altitude: 0
         }}
         // Only on iOS MapKit, in meters. The property is ignored by Google Maps.
-
+        // userInterfaceStyle="dark"
+        customMapStyle={mapStyleLight}
         style={styles.map}
         // showsUserLocation={true}
         showsCompass={true}
