@@ -18,3 +18,4 @@ const QuartierSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model('Quartier', QuartierSchema);
+ 

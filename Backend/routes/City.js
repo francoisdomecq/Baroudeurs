@@ -1,14 +1,15 @@
 //Regarder CrossFeaturing.js pour comprendre le fonctionnement des routes
 
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-const CityCtrl = require('../controllers/City')
+const CityCtrl = require('../controllers/City');
 
-router.get('/', CityCtrl.getAllCity)
-router.post('/', CityCtrl.createCity)
-router.get('/:id', CityCtrl.getOneCity)
-router.put('/:id', CityCtrl.modifyCity)
-router.delete('/:id', CityCtrl.deleteCity)
+router.get('/', CityCtrl.getAllCity);
+router.post('/', CityCtrl.createCity);
+router.get('/:id', CityCtrl.getOneCity);
+router.get('/name/:name', CityCtrl.getOneCityByName);
+router.put('/:id', CityCtrl.modifyCity);
+router.delete('/:id', CityCtrl.deleteCity);
 
-module.exports = router
+module.exports = router;

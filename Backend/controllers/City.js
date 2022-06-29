@@ -1,13 +1,15 @@
 //Regarder CrossFeaturing.js pour comprendre le fonctionnement des requêtes
 
 const City = require('../models/City');
+const { getOneQuartier } = require('./Quartier');
 
 exports.createCity = (req, res, next) => {
   const city = new City({
     name: req.body.name,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
-    polygon: req.body.polygon
+    polygon: req.body.polygon,
+    quartiers: req.body.quartiers
   });
   city
     .save(JSON.stringify(city))
@@ -37,13 +39,28 @@ exports.getOneCity = (req, res, next) => {
     });
 };
 
+exports.getOneCityByName = (req, res, next) => {
+  City.findOne({
+    name: req.params.name
+  })
+    .then((city) => {
+      res.status(200).json(city);
+    })
+    .catch((error) => {
+      res.status(404).json({
+        error: error
+      });
+    });
+};
+
 exports.modifyCity = (req, res, next) => {
   const city = new City({
     _id: req.params.id,
     name: req.body.name,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
-    polygon: req.body.polygon
+    polygon: req.body.polygon,
+    quartiers: req.body.quartiers
   });
   city
     .updateOne({ _id: req.params.id }, city)

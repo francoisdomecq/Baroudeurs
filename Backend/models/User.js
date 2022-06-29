@@ -16,9 +16,12 @@ const localisationSchema = mongoose.Schema(
 const UserSchema = mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
-  typeVisiteur: { type: String, required: true },
-  localisation: { type: localisationSchema, required: true },
-  cityPicked: { type: Schema.Types.ObjectId, ref: City, required: true },
+  typeVisiteur: { type: String, default: 'Visiteur' },
+  localisation: {
+    type: localisationSchema,
+    default: { latitude: 0, longitude: 0 }
+  },
+  cityPicked: { type: Schema.Types.ObjectId, ref: City, default: null },
   score: { type: Number, required: true },
   queteEnCours: [{ type: Schema.Types.ObjectId, ref: QueteSchema }],
   queteTerminees: [{ type: Schema.Types.ObjectId, ref: QueteSchema }],
