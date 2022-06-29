@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState} from 'react';
 import { Appearance } from 'react-native';
 import { NavigationProps } from '../../navigation/app-stacks';
 
@@ -10,6 +10,8 @@ import Form from './Form';
 import Map from './Map';
 import Quartier from '../../services/quartier.model';
 import QuartierApi from '../../services/quartier.api_service';
+
+import { AppContext } from '../../utils/context';
 
 interface MapProps extends NavigationProps {}
 
@@ -23,6 +25,9 @@ interface MapState {
   formDone: boolean;
 }
 export default function MapScreenFunction(props: MapProps) {
+
+  
+
   const [colorScheme, setColorScheme] = useState<string>('');
   const [latitude, setLatitude] = useState<number>(0);
   const [longitude, setLongitude] = useState<number>(0);

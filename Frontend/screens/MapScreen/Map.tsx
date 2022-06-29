@@ -36,33 +36,37 @@ export default function MapFunction(props: MapProps) {
     setDisplayModal(modalVisible);
   };
 
-  const selectTheme = (theme: string) => {
+  function selectTheme(theme: string) {
     if (themeChoisi.includes(theme)) {
       const newThemesArray = [...themeChoisi];
       newThemesArray.splice(newThemesArray.indexOf(theme));
+      console.log(newThemesArray);
       if (newThemesArray.length === 0) {
         SetMarkers(constantMarkers);
-        setThemeChoisi(newThemesArray);
+        setThemeChoisi([]);
       } else {
         setThemeChoisi(newThemesArray);
-        filter();
+        filter(newThemesArray);
       }
     } else {
       if (theme !== 'Annuler') {
         const newTheme = [...themeChoisi, theme];
         setThemeChoisi(newTheme);
-        filter();
+        filter(newTheme);
       } else {
         setThemeChoisi([]);
         SetMarkers(constantMarkers);
         setDisplayModal(false);
       }
     }
-  };
+  }
 
-  function filter() {
+  function filter(themeChoisi: Array<string>) {
     const filteredMarkers = constantMarkers.filter((marker) => {
-      if (themeChoisi.includes(marker.theme)) return marker;
+      if (themeChoisi.includes(marker.theme)) {
+        console.log(marker);
+        return marker;
+      }
     });
     SetMarkers(filteredMarkers);
   }

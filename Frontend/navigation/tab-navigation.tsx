@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BottomTabBarOptions,
   createBottomTabNavigator
 } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native';
-
 import {
   RootStackParamList,
   MapStackScreen,
